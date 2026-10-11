@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <title>Valiant Shade v1.0 — Pathfinder 1E Character Sheet</title>
+  <meta name="description" content="Valiant Shade v1.0 — Pathfinder 1E Player Character Sheet" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+
+  <link rel="preload" href="css/core.css" as="style" />
+  <link rel="preload" href="css/style.css" as="style" />
+  <link rel="stylesheet" href="css/core.css" />
+  <link rel="stylesheet" href="css/demo.css" />
+  <link rel="stylesheet" href="css/iconify.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <nav class="pf-app-header px-2 px-md-4 mb-3 shadow-sm">
+    <div class="pf-header-inner">
+
+      <div class="pf-header-brand">
+        <img src="assets/img/branding/valiant-shade-logo-small.png" alt="Valiant Shade" class="pf-brand-logo">
+        <div class="pf-brand-text">
+          <div class="pf-brand-name">
+            Valiant Shade
+            <span class="pf-brand-badge">v1.0</span>
+          </div>
+          <div class="pf-brand-sub" id="topCharNameDisplay"></div>
+        </div>
+      </div>
+
+      <div class="pf-header-center">
+        <span id="saveStatusIndicator" class="pf-save-status" style="display:none">
+          <i class="ti tabler-database-check"></i>
+          <span id="autosave-status">Saved</span>
+        </span>
+      </div>
+
+      <div class="pf-header-actions">
+
+        <div class="pf-btn-group">
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--ghost" id="btn-toggle-lang" title="Toggle Language (TR/EN)">
+            <i class="ti tabler-language"></i>
+            <span id="lang-label" data-i18n="nav_lang">EN</span>
+          </button>
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--ghost" id="btn-characters-modal" title="Manage Saved Characters">
+            <i class="ti tabler-users"></i>
+            <span class="pf-btn-label" data-i18n="nav_characters">Characters</span>
+          </button>
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--info" id="btn-new-character" title="Create New Character Sheet">
+            <i class="ti tabler-plus"></i>
+            <span class="pf-btn-label" data-i18n="nav_new">New</span>
+          </button>
+        </div>
+
+        <div class="pf-hdr-divider"></div>
+
+        <div class="pf-btn-group pf-io-group">
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--ghost" id="btn-download-json" title="Download Character JSON">
+            <i class="ti tabler-download"></i>
+            <span class="pf-btn-label" data-i18n="nav_download">JSON</span>
+          </button>
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--ghost" id="btn-import-json" title="Import Character JSON">
+            <i class="ti tabler-upload"></i>
+            <span class="pf-btn-label" data-i18n="nav_import">Import</span>
+          </button>
+        </div>
+
+        <div class="pf-hdr-divider pf-io-divider"></div>
+
+        <div class="pf-btn-group">
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--danger" id="btn-generate-pdf" title="Generate Official Pathfinder PDF Sheet">
+            <i class="ti tabler-file-type-pdf"></i>
+            <span class="pf-btn-label" data-i18n="nav_pdf">PDF</span>
+          </button>
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--dice" id="btnToggleDiceDrawer" title="Toggle Floating Dice Tray">
+            <i class="ti tabler-dice-6"></i>
+            <span class="pf-btn-label" data-i18n="nav_dice">Dice</span>
+          </button>
+          <button type="button" class="pf-hdr-btn pf-hdr-btn--save" id="btnSaveSheet">
+            <i class="ti tabler-device-floppy"></i>
+            <span data-i18n="nav_save">Save</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <input type="file" id="file-input" style="display:none" accept=".json">
+  </nav>
+
+  <div class="pf-sheet-container pb-5">
+
+    <div class="pf-card p-3 p-md-4 mb-3">
+
+      <div class="row g-2 align-items-center mb-2">
+
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-0">Character Name</label>
+            <span class="badge bg-primary px-2 py-0_5 font-monospace" style="font-size: 0.68rem;">Main</span>
+          </div>
+          <input type="text" id="sheetCharName" class="form-control form-control-sm fw-bold text-heading pf-box-input text-start px-2_5" placeholder="Character Name" style="font-size: 1.05rem;" />
+        </div>
+
+        <div class="col-6 col-sm-6 col-lg-2">
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Alignment</label>
+          <select id="sheetAlignmentSelect" class="form-select form-select-sm pf-box-input text-start px-2 font-monospace">
+            <option value="LG">LG</option>
+            <option value="NG">NG</option>
+            <option value="CG">CG</option>
+            <option value="LN">LN</option>
+            <option value="N">N</option>
+            <option value="CN">CN</option>
+            <option value="LE">LE</option>
+            <option value="NE">NE</option>
+            <option value="CE">CE</option>
+          </select>
+        </div>
+
+        <div class="col-6 col-sm-4 col-lg-2">
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Player</label>
+          <input type="text" id="sheetPlayerName" class="form-control form-control-sm pf-box-input text-start px-2" placeholder="Player Name" />
+        </div>
+
+        <div class="col-6 col-sm-4 col-lg-2">
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1 d-flex justify-content-between">
+            <span>Level</span>
+            <span class="badge bg-label-primary font-monospace py-0 px-1" id="sheetLvlCounter">1</span>
+          </label>
+          <div class="input-group input-group-sm">
+            <button class="btn btn-outline-secondary px-2" type="button" id="btnLvlDown"><i class="icon-base ti tabler-minus"></i></button>
+            <input type="number" id="sheetLevelInput" class="form-control form-control-sm text-center font-monospace fw-bold pf-box-input" min="1" max="20" value="1" />
+            <button class="btn btn-outline-secondary px-2" type="button" id="btnLvlUp"><i class="icon-base ti tabler-plus"></i></button>
+          </div>
+        </div>
+
+        <div class="col-6 col-sm-4 col-lg-2">
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Deity</label>
+          <input type="text" id="sheetDeityInput" class="form-control form-control-sm pf-box-input text-start px-2" placeholder="Deity" />
+        </div>
+      </div>
+
+      <div class="row g-2 align-items-center mb-2 pt-1 border-top border-secondary border-opacity-10">
+
+        <div class="col-12 col-md-5 col-lg-4">
+          <label class="form-label text-uppercase text-warning fw-bold small mb-1 d-flex align-items-center justify-content-between">
+            <span>Class <span class="text-warning">*</span></span>
+            <span class="badge bg-label-warning font-monospace py-0 px-1_5" id="sheetHitDieBadge">HD: d10</span>
+          </label>
+          <select id="sheetClassSelect" class="form-select form-select-sm fw-bold pf-box-input text-start px-2">
+            <option value="adept" data-hd="d6" data-ranks="2">Adept (d6 - 2+INT)</option>
+            <option value="alchemist" data-hd="d8" data-ranks="4">Alchemist (d8 - 4+INT)</option>
+            <option value="antipaladin" data-hd="d10" data-ranks="2">Antipaladin (d10 - 2+INT)</option>
+            <option value="arcanist" data-hd="d6" data-ranks="2">Arcanist (d6 - 2+INT)</option>
+            <option value="aristocrat" data-hd="d8" data-ranks="4">Aristocrat (d8 - 4+INT)</option>
+            <option value="barbarian" data-hd="d12" data-ranks="4">Barbarian (d12 - 4+INT)</option>
+            <option value="unchained_barbarian" data-hd="d12" data-ranks="4">Barbarian (Unchained) (d12 - 4+INT)</option>
+            <option value="bard" data-hd="d8" data-ranks="6">Bard (d8 - 6+INT)</option>
+            <option value="bloodrager" data-hd="d10" data-ranks="4">Bloodrager (d10 - 4+INT)</option>
+            <option value="brawler" data-hd="d10" data-ranks="4">Brawler (d10 - 4+INT)</option>
+            <option value="cavalier" data-hd="d10" data-ranks="4">Cavalier (d10 - 4+INT)</option>
+            <option value="cleric" data-hd="d8" data-ranks="2">Cleric (d8 - 2+INT)</option>
+            <option value="commoner" data-hd="d6" data-ranks="2">Commoner (d6 - 2+INT)</option>
+            <option value="druid" data-hd="d8" data-ranks="4">Druid (d8 - 4+INT)</option>
+            <option value="expert" data-hd="d8" data-ranks="6">Expert (d8 - 6+INT)</option>
+            <option value="fighter" data-hd="d10" data-ranks="2">Fighter (d10 - 2+INT)</option>
+            <option value="gunslinger" data-hd="d10" data-ranks="4">Gunslinger (d10 - 4+INT)</option>
+            <option value="hunter" data-hd="d8" data-ranks="6">Hunter (d8 - 6+INT)</option>
+            <option value="inquisitor" data-hd="d8" data-ranks="6">Inquisitor (d8 - 6+INT)</option>
+            <option value="investigator" data-hd="d8" data-ranks="6">Investigator (d8 - 6+INT)</option>
+            <option value="kineticist" data-hd="d8" data-ranks="4">Kineticist (d8 - 4+INT)</option>
+            <option value="magus" data-hd="d8" data-ranks="2">Magus (d8 - 2+INT)</option>
+            <option value="medium" data-hd="d8" data-ranks="4">Medium (d8 - 4+INT)</option>
+            <option value="mesmerist" data-hd="d8" data-ranks="6">Mesmerist (d8 - 6+INT)</option>
+            <option value="monk" data-hd="d8" data-ranks="4">Monk (d8 - 4+INT)</option>
+            <option value="unchained_monk" data-hd="d10" data-ranks="4">Monk (Unchained) (d10 - 4+INT)</option>
+            <option value="ninja" data-hd="d8" data-ranks="8">Ninja (d8 - 8+INT)</option>
+            <option value="occultist" data-hd="d8" data-ranks="4">Occultist (d8 - 4+INT)</option>
+            <option value="omdura" data-hd="d8" data-ranks="4">Omdura (d8 - 4+INT)</option>
+            <option value="oracle" data-hd="d8" data-ranks="4">Oracle (d8 - 4+INT)</option>
+            <option value="paladin" data-hd="d10" data-ranks="2" selected>Paladin (d10 - 2+INT)</option>
+            <option value="psychic" data-hd="d6" data-ranks="2">Psychic (d6 - 2+INT)</option>
+            <option value="ranger" data-hd="d10" data-ranks="6">Ranger (d10 - 6+INT)</option>
+            <option value="rogue" data-hd="d8" data-ranks="8">Rogue (d8 - 8+INT)</option>
+            <option value="unchained_rogue" data-hd="d8" data-ranks="8">Rogue (Unchained) (d8 - 8+INT)</option>
+            <option value="samurai" data-hd="d10" data-ranks="4">Samurai (d10 - 4+INT)</option>
+            <option value="shaman" data-hd="d8" data-ranks="4">Shaman (d8 - 4+INT)</option>
+            <option value="shifter" data-hd="d10" data-ranks="4">Shifter (d10 - 4+INT)</option>
+            <option value="skald" data-hd="d8" data-ranks="4">Skald (d8 - 4+INT)</option>
+            <option value="slayer" data-hd="d10" data-ranks="6">Slayer (d10 - 6+INT)</option>
+            <option value="sorcerer" data-hd="d6" data-ranks="2">Sorcerer (d6 - 2+INT)</option>
+            <option value="spiritualist" data-hd="d8" data-ranks="4">Spiritualist (d8 - 4+INT)</option>
+            <option value="summoner" data-hd="d8" data-ranks="2">Summoner (d8 - 2+INT)</option>
+            <option value="unchained_summoner" data-hd="d8" data-ranks="2">Summoner (Unchained) (d8 - 2+INT)</option>
+            <option value="swashbuckler" data-hd="d10" data-ranks="4">Swashbuckler (d10 - 4+INT)</option>
+            <option value="vampire_hunter" data-hd="d8" data-ranks="6">Vampire Hunter (d8 - 6+INT)</option>
+            <option value="vigilante" data-hd="d8" data-ranks="6">Vigilante (d8 - 6+INT)</option>
+            <option value="warpriest" data-hd="d8" data-ranks="2">Warpriest (d8 - 2+INT)</option>
+            <option value="warrior_npc" data-hd="d10" data-ranks="2">Warrior (NPC) (d10 - 2+INT)</option>
+            <option value="witch" data-hd="d6" data-ranks="2">Witch (d6 - 2+INT)</option>
+            <option value="wizard" data-hd="d6" data-ranks="2">Wizard (d6 - 2+INT)</option>
+          </select>
+          <input type="hidden" id="sheetHitDie" value="d10" />
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-4">
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1 d-flex justify-content-between align-items-center">
+            <span>Race</span>
+            <span class="badge bg-label-info py-0 px-1 font-monospace" style="font-size: 0.65rem;">
+              <i class="icon-base ti tabler-user icon-xs me-0_5"></i>Select / Custom
+            </span>
+          </label>
+          <input type="text" id="sheetRaceInput" class="form-control form-control-sm pf-box-input text-start px-2 text-heading fw-semibold" list="pfRacesList" placeholder="e.g. Human, Elf, Dwarf..." value="Human" />
+          <datalist id="pfRacesList">
+            <option value="Human">
+            <option value="Elf">
+            <option value="Half-Elf">
+            <option value="Dwarf">
+            <option value="Halfling">
+            <option value="Gnome">
+            <option value="Half-Orc">
+            <option value="Aasimar">
+            <option value="Tiefling">
+            <option value="Catfolk">
+            <option value="Dhampir">
+            <option value="Drow">
+            <option value="Goblin">
+            <option value="Ifrit">
+            <option value="Kitsune">
+            <option value="Kobold">
+            <option value="Orc">
+            <option value="Oread">
+            <option value="Ratfolk">
+            <option value="Sylph">
+            <option value="Tengu">
+            <option value="Undine">
+          </datalist>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-4">
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Homeland</label>
+          <input type="text" id="sheetHomelandInput" class="form-control form-control-sm pf-box-input text-start px-2" placeholder="Homeland" />
+        </div>
+      </div>
+
+      <div class="pf-identity-grid pt-1 border-top border-secondary border-opacity-10">
+        <div>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Size</label>
+          <select id="sheetSizeSelect" class="form-select form-select-sm pf-box-input px-1 text-center font-monospace">
+            <option value="Colossal">Colossal (-8)</option>
+            <option value="Gargantuan">Gargantuan (-4)</option>
+            <option value="Huge">Huge (-2)</option>
+            <option value="Large">Large (-1)</option>
+            <option value="Medium" selected>Medium (0)</option>
+            <option value="Small">Small (+1)</option>
+            <option value="Tiny">Tiny (+2)</option>
+            <option value="Diminutive">Diminutive (+4)</option>
+            <option value="Fine">Fine (+8)</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1" id="lblGender" style="cursor: pointer;" title="Click to toggle Male / Female">
+            Gender <i class="icon-base ti tabler-arrows-exchange text-warning ms-0_5" style="font-size: 0.72rem;"></i>
+          </label>
+          <div class="input-group input-group-sm">
+            <select id="sheetGenderInput" class="form-select form-select-sm pf-box-input text-center px-1 font-monospace">
+              <option value="Male" selected>Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <button type="button" class="btn btn-outline-secondary px-1_5" id="btnToggleGender" title="Toggle Male / Female">
+              <i class="icon-base ti tabler-arrows-exchange text-warning"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Age</label>
+          <input type="text" id="sheetAgeInput" class="form-control form-control-sm pf-box-input text-center px-1" placeholder="25" />
+        </div>
+        <div>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Height / Weight</label>
+          <input type="text" id="sheetHeightInput" class="form-control form-control-sm pf-box-input text-center px-1" placeholder="6' 1\" 185 lbs" />
+        </div>
+        <div>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Hair / Eyes</label>
+          <input type="text" id="sheetEyesHairInput" class="form-control form-control-sm pf-box-input text-center px-1" placeholder="Brown / Hazel" />
+        </div>
+      </div>
+
+      <div class="col-12 mt-2 pt-2 border-top border-secondary border-opacity-10" id="multiclass-container">
+        <div class="d-flex align-items-center justify-content-between mb-1">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-label-warning font-monospace" id="multiclass-summary-badge" style="display:none;"></span>
+            <span class="small text-body-secondary fw-semibold">MULTICLASS PROGRESSION</span>
+          </div>
+          <button type="button" class="btn btn-xs btn-label-warning rounded-pill px-2 d-inline-flex align-items-center gap-1" id="btn-add-multiclass">
+            <i class="icon-base ti tabler-plus"></i> Add Multiclass
+          </button>
+        </div>
+        <div id="multiclass-rows" class="d-flex flex-column gap-1"></div>
+      </div>
+    </div>
+
+    <div class="pf-nav-tabs pf-mobile-tab-bar mb-3" id="mainSectionNav">
+      <button type="button" class="pf-nav-tab active" data-target="paneCombat">
+        <i class="icon-base ti tabler-shield"></i>
+        <span>Combat & Stats</span>
+      </button>
+      <button type="button" class="pf-nav-tab" data-target="paneSkills">
+        <i class="icon-base ti tabler-award"></i>
+        <span>Skills</span>
+      </button>
+      <button type="button" class="pf-nav-tab" data-target="paneGear">
+        <i class="icon-base ti tabler-backpack"></i>
+        <span>Gear & Feats</span>
+      </button>
+      <button type="button" class="pf-nav-tab" data-target="paneSpells">
+        <i class="icon-base ti tabler-wand"></i>
+        <span>Spells</span>
+      </button>
+    </div>
+
+    <div class="row g-3">
+
+      <div id="paneCombat" class="col-12 col-xl-8 pf-section-pane active-pane">
+
+        <div class="pf-card p-3 mb-3">
+          <div class="pf-banner-header">
+            <span>Ability Scores</span>
+            <span class="pf-banner-sub">Click modifier to roll check (d20+Mod)</span>
+          </div>
+
+          <div class="row g-2 g-sm-2_5" id="abilityScoresGrid">
+
+            <div class="col-6 col-sm-4 col-xl-2">
+              <div class="pf-stat-card p-2 text-center h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center justify-content-between mb-1 px-1">
+                  <span class="fw-bold text-heading font-monospace fs-5">STR</span>
+                  <span class="text-body-secondary font-monospace" style="font-size: 0.68rem;">Strength</span>
+                </div>
+                <div class="my-1">
+                  <div class="pf-mod-box ability-mod-btn py-1 px-2 font-monospace fw-bold fs-4 text-primary cursor-pointer w-100" data-ab="str" title="Roll Strength Check (d20+Mod)">
+                    <span id="mod_val_str">+0</span>
+                  </div>
+                </div>
+                <div class="mt-1">
+                  <label class="form-label text-uppercase text-body-secondary mb-0 small d-block font-monospace" style="font-size: 0.65rem;">Score</label>
+                  <input type="number" id="score_str" class="form-control form-control-sm pf-box-input font-monospace text-center fw-bold ability-score-input mx-auto" min="1" max="50" value="10" data-ab="str" style="max-width: 76px;" />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-xl-2">
+              <div class="pf-stat-card p-2 text-center h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center justify-content-between mb-1 px-1">
+                  <span class="fw-bold text-heading font-monospace fs-5">DEX</span>
+                  <span class="text-body-secondary font-monospace" style="font-size: 0.68rem;">Dexterity</span>
+                </div>
+                <div class="my-1">
+                  <div class="pf-mod-box ability-mod-btn py-1 px-2 font-monospace fw-bold fs-4 text-primary cursor-pointer w-100" data-ab="dex" title="Roll Dexterity Check (d20+Mod)">
+                    <span id="mod_val_dex">+0</span>
+                  </div>
+                </div>
+                <div class="mt-1">
+                  <label class="form-label text-uppercase text-body-secondary mb-0 small d-block font-monospace" style="font-size: 0.65rem;">Score</label>
+                  <input type="number" id="score_dex" class="form-control form-control-sm pf-box-input font-monospace text-center fw-bold ability-score-input mx-auto" min="1" max="50" value="10" data-ab="dex" style="max-width: 76px;" />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-xl-2">
+              <div class="pf-stat-card p-2 text-center h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center justify-content-between mb-1 px-1">
+                  <span class="fw-bold text-heading font-monospace fs-5">CON</span>
+                  <span class="text-body-secondary font-monospace" style="font-size: 0.68rem;">Constitution</span>
+                </div>
+                <div class="my-1">
+                  <div class="pf-mod-box ability-mod-btn py-1 px-2 font-monospace fw-bold fs-4 text-primary cursor-pointer w-100" data-ab="con" title="Roll Constitution Check (d20+Mod)">
+                    <span id="mod_val_con">+0</span>
+                  </div>
+                </div>
+                <div class="mt-1">
+                  <label class="form-label text-uppercase text-body-secondary mb-0 small d-block font-monospace" style="font-size: 0.65rem;">Score</label>
+                  <input type="number" id="score_con" class="form-control form-control-sm pf-box-input font-monospace text-center fw-bold ability-score-input mx-auto" min="1" max="50" value="10" data-ab="con" style="max-width: 76px;" />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-xl-2">
+              <div class="pf-stat-card p-2 text-center h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center justify-content-between mb-1 px-1">
+                  <span class="fw-bold text-heading font-monospace fs-5">INT</span>
+                  <span class="text-body-secondary font-monospace" style="font-size: 0.68rem;">Intelligence</span>
+                </div>
+                <div class="my-1">
+                  <div class="pf-mod-box ability-mod-btn py-1 px-2 font-monospace fw-bold fs-4 text-primary cursor-pointer w-100" data-ab="int" title="Roll Intelligence Check (d20+Mod)">
+                    <span id="mod_val_int">+0</span>
+                  </div>
+                </div>
+                <div class="mt-1">
+                  <label class="form-label text-uppercase text-body-secondary mb-0 small d-block font-monospace" style="font-size: 0.65rem;">Score</label>
+                  <input type="number" id="score_int" class="form-control form-control-sm pf-box-input font-monospace text-center fw-bold ability-score-input mx-auto" min="1" max="50" value="10" data-ab="int" style="max-width: 76px;" />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-xl-2">
+              <div class="pf-stat-card p-2 text-center h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center justify-content-between mb-1 px-1">
+                  <span class="fw-bold text-heading font-monospace fs-5">WIS</span>
+                  <span class="text-body-secondary font-monospace" style="font-size: 0.68rem;">Wisdom</span>
+                </div>
+                <div class="my-1">
+                  <div class="pf-mod-box ability-mod-btn py-1 px-2 font-monospace fw-bold fs-4 text-primary cursor-pointer w-100" data-ab="wis" title="Roll Wisdom Check (d20+Mod)">
+                    <span id="mod_val_wis">+0</span>
+                  </div>
+                </div>
+                <div class="mt-1">
+                  <label class="form-label text-uppercase text-body-secondary mb-0 small d-block font-monospace" style="font-size: 0.65rem;">Score</label>
+                  <input type="number" id="score_wis" class="form-control form-control-sm pf-box-input font-monospace text-center fw-bold ability-score-input mx-auto" min="1" max="50" value="10" data-ab="wis" style="max-width: 76px;" />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-xl-2">
+              <div class="pf-stat-card p-2 text-center h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center justify-content-between mb-1 px-1">
+                  <span class="fw-bold text-heading font-monospace fs-5">CHA</span>
+                  <span class="text-body-secondary font-monospace" style="font-size: 0.68rem;">Charisma</span>
+                </div>
+                <div class="my-1">
+                  <div class="pf-mod-box ability-mod-btn py-1 px-2 font-monospace fw-bold fs-4 text-primary cursor-pointer w-100" data-ab="cha" title="Roll Charisma Check (d20+Mod)">
+                    <span id="mod_val_cha">+0</span>
+                  </div>
+                </div>
+                <div class="mt-1">
+                  <label class="form-label text-uppercase text-body-secondary mb-0 small d-block font-monospace" style="font-size: 0.65rem;">Score</label>
+                  <input type="number" id="score_cha" class="form-control form-control-sm pf-box-input font-monospace text-center fw-bold ability-score-input mx-auto" min="1" max="50" value="10" data-ab="cha" style="max-width: 76px;" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+
+          <div class="col-12 col-md-6">
+            <div class="pf-card p-3 h-100">
+              <div class="pf-banner-header">
+                <span>Hit Points (HP)</span>
+                <button type="button" class="btn btn-xs btn-label-warning rounded-pill px-2 py-0" data-bs-toggle="modal" data-bs-target="#modalHpBreakdown">
+                  <i class="icon-base ti tabler-calculator me-1"></i> Die Breakdown
+                </button>
+              </div>
+              <div class="row g-2 mb-2">
+                <div class="col-6 text-center">
+                  <label class="form-label small text-body-secondary fw-semibold mb-1">Total Max HP</label>
+                  <div class="pf-box-input bg-label-primary text-primary fw-bold fs-5 py-1" id="sheetMaxHpDisplay">12</div>
+                  <input type="hidden" id="sheetMaxHp" value="12" />
+                </div>
+                <div class="col-6 text-center">
+                  <label class="form-label small text-body-secondary fw-semibold mb-1">Current HP</label>
+                  <input type="number" id="sheetCurrentHp" class="form-control form-control-sm pf-box-input text-success font-monospace fw-bold fs-5 py-1" value="12" />
+                </div>
+                <div class="col-6">
+                  <label class="form-label small text-body-secondary fw-semibold mb-1">Wounds / Nonlethal</label>
+                  <input type="number" id="sheetNonlethalInput" class="form-control form-control-sm pf-box-input text-danger font-monospace" placeholder="Wounds" />
+                </div>
+                <div class="col-6">
+                  <label class="form-label small text-body-secondary fw-semibold mb-1">DR (Damage Red.)</label>
+                  <input type="text" id="sheetDrInput" class="form-control form-control-sm pf-box-input" placeholder="e.g. 5/Evil" />
+                </div>
+              </div>
+              <div class="text-center pt-1 border-top border-secondary border-opacity-10">
+                <small class="text-body-secondary font-monospace" id="sheetHpTotalFormulaSummary">Level 1: 10 (Die) + 2 (Con) = 12 Max HP</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="pf-card p-3 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="pf-banner-header">
+                  <span>Initiative & Speed</span>
+                  <span class="pf-banner-sub">Roll Initiative</span>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between p-2 rounded bg-body mb-2 border">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="avatar avatar-xs rounded bg-label-primary d-flex align-items-center justify-content-center">
+                      <i class="icon-base ti tabler-bolt fs-6"></i>
+                    </span>
+                    <div>
+                      <strong class="text-heading d-block text-uppercase" style="font-size: 0.75rem;">INITIATIVE</strong>
+                      <small class="text-body-secondary font-monospace">DEX (<span id="lblInitDexMod">+0</span>) + Misc</small>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center gap-1_5">
+                    <input type="number" id="sheetInitMisc" class="form-control form-control-sm pf-box-input pf-input-compact font-monospace" style="width: 50px;" value="0" title="Misc Modifier" />
+                    <div class="pf-mod-box px-3 py-1 font-monospace fw-bold text-primary fs-5 cursor-pointer" id="btnRollInit" title="Roll Initiative (d20)">
+                      <span id="sheetInitTotal">+0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-1 text-center font-monospace">
+                <div class="col-4">
+                  <label class="small text-body-secondary d-block" style="font-size: 0.65rem;">Land Base</label>
+                  <input type="number" id="sheetSpeedBase" class="form-control form-control-sm pf-box-input pf-input-compact" value="30" />
+                </div>
+                <div class="col-4">
+                  <label class="small text-body-secondary d-block" style="font-size: 0.65rem;">With Armor</label>
+                  <input type="number" id="sheetSpeedArmor" class="form-control form-control-sm pf-box-input pf-input-compact" value="20" />
+                </div>
+                <div class="col-4">
+                  <label class="small text-body-secondary d-block" style="font-size: 0.65rem;">Fly</label>
+                  <input type="text" id="sheetSpeedFly" class="form-control form-control-sm pf-box-input pf-input-compact" placeholder="—" />
+                </div>
+                <div class="col-4 mt-1">
+                  <label class="small text-body-secondary d-block" style="font-size: 0.65rem;">Swim</label>
+                  <input type="text" id="sheetSpeedSwim" class="form-control form-control-sm pf-box-input pf-input-compact" placeholder="—" />
+                </div>
+                <div class="col-4 mt-1">
+                  <label class="small text-body-secondary d-block" style="font-size: 0.65rem;">Climb</label>
+                  <input type="text" id="sheetSpeedClimb" class="form-control form-control-sm pf-box-input pf-input-compact" placeholder="—" />
+                </div>
+                <div class="col-4 mt-1">
+                  <label class="small text-body-secondary d-block" style="font-size: 0.65rem;">Burrow</label>
+                  <input type="text" id="sheetSpeedBurrow" class="form-control form-control-sm pf-box-input pf-input-compact" placeholder="—" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-card p-3 mb-3">
+          <div class="pf-banner-header">
+            <span>Armor Class (AC)</span>
+            <span class="pf-banner-sub">10 + Armor + Shield + DEX + Size + Natural + Deflect + Misc</span>
+          </div>
+
+          <div class="row g-2 align-items-center text-center mb-2">
+            <div class="col-12 col-md-4">
+              <div class="p-2 rounded bg-label-primary border border-primary border-opacity-25">
+                <span class="small text-uppercase text-body-secondary d-block font-monospace" style="font-size: 0.7rem;">TOTAL AC</span>
+                <span class="fs-4 fw-bold font-monospace text-primary" id="sheetAcTotal">10</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded bg-body border">
+                <span class="small text-uppercase text-body-secondary d-block font-monospace" style="font-size: 0.7rem;">Touch AC</span>
+                <span class="fs-5 fw-bold font-monospace text-warning" id="sheetAcTouch">10</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded bg-body border">
+                <span class="small text-uppercase text-body-secondary d-block font-monospace" style="font-size: 0.7rem;">Flat-Footed AC</span>
+                <span class="fs-5 fw-bold font-monospace text-info" id="sheetAcFlat">10</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-ac-breakdown text-center font-monospace small mb-2">
+            <div>
+              <label class="text-body-secondary d-block text-truncate" style="font-size: 0.65rem;" title="Armor Bonus">ARMOR</label>
+              <input type="number" id="sheetAcArmor" class="form-control form-control-sm pf-box-input pf-input-compact text-center w-100" value="0" />
+            </div>
+            <div>
+              <label class="text-body-secondary d-block text-truncate" style="font-size: 0.65rem;" title="Shield Bonus">SHIELD</label>
+              <input type="number" id="sheetAcShield" class="form-control form-control-sm pf-box-input pf-input-compact text-center w-100" value="0" />
+            </div>
+            <div>
+              <label class="text-body-secondary d-block text-truncate" style="font-size: 0.65rem;" title="Dexterity Modifier">DEX MOD</label>
+              <input type="number" id="sheetAcDex" class="form-control form-control-sm pf-box-input pf-input-compact text-center w-100" value="0" readonly />
+            </div>
+            <div>
+              <label class="text-body-secondary d-block text-truncate" style="font-size: 0.65rem;" title="Size Modifier">SIZE</label>
+              <input type="number" id="sheetAcSize" class="form-control form-control-sm pf-box-input pf-input-compact text-center w-100" value="0" readonly />
+            </div>
+            <div>
+              <label class="text-body-secondary d-block text-truncate" style="font-size: 0.65rem;" title="Natural Armor">NATURAL</label>
+              <input type="number" id="sheetAcNatural" class="form-control form-control-sm pf-box-input pf-input-compact text-center w-100" value="0" />
+            </div>
+            <div>
+              <label class="text-body-secondary d-block text-truncate" style="font-size: 0.65rem;" title="Deflection Bonus">DEFLECT</label>
+              <input type="number" id="sheetAcDeflect" class="form-control form-control-sm pf-box-input pf-input-compact text-center w-100" value="0" />
+            </div>
+            <div>
+              <label class="text-body-secondary d-block text-truncate" style="font-size: 0.65rem;" title="Misc / Dodge Bonus">MISC</label>
+              <input type="number" id="sheetAcMisc" class="form-control form-control-sm pf-box-input pf-input-compact text-center w-100" value="0" />
+            </div>
+          </div>
+
+          <div id="dexCapNotice" class="d-none text-center mt-2">
+            <span id="badgeDexCapInfo" class="badge bg-label-warning font-monospace py-1 px-2" style="font-size: 0.72rem;"></span>
+          </div>
+
+          <div class="pt-3 mt-3 border-top border-secondary border-opacity-20" id="sectionIntegratedAcItems">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap" style="font-size: 0.75rem;">
+                <span class="badge bg-label-primary font-monospace py-1 px-2 d-inline-flex align-items-center gap-1 shadow-xs" id="badgeActiveArmor">
+                  <i class="icon-base ti tabler-shield-filled fs-6"></i>
+                  <span>Active Armor:</span>
+                  <strong id="lblActiveArmorName" class="text-heading ms-1">None (Unarmored)</strong>
+                </span>
+                <span class="badge bg-label-info font-monospace py-1 px-2 d-inline-flex align-items-center gap-1 shadow-xs" id="badgeActiveShield">
+                  <i class="icon-base ti tabler-shield fs-6"></i>
+                  <span>Active Shield:</span>
+                  <strong id="lblActiveShieldName" class="text-heading ms-1">None</strong>
+                </span>
+              </div>
+              <button type="button" class="btn btn-xs btn-label-primary rounded-pill px-2" id="btnAddAcItemRow">
+                <i class="icon-base ti tabler-plus me-1"></i> Add Item
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-sm align-middle text-center mb-0" id="tableAcItems" style="font-size: 0.76rem; min-width: 480px;">
+                <thead>
+                  <tr class="text-body-secondary font-monospace text-uppercase" style="font-size: 0.68rem;">
+                    <th style="width: 58px;">Active</th>
+                    <th class="text-start">Item Name</th>
+                    <th style="width: 82px;">Type</th>
+                    <th style="width: 50px;">Bonus</th>
+                    <th style="width: 46px;" title="Armor Check Penalty">Pen</th>
+                    <th style="width: 46px;" title="Weight">Wt</th>
+                    <th style="width: 26px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="acItemsTbody"></tbody>
+                <tfoot>
+                  <tr class="fw-bold font-monospace bg-body border-top">
+                    <td class="text-center"><span class="badge bg-label-success py-0 px-1" style="font-size: 0.62rem;">ACTIVE</span></td>
+                    <td class="text-start" colspan="2">EQUIPPED TOTAL:</td>
+                    <td id="acItemTotalBonus" class="text-primary">+0</td>
+                    <td id="acItemTotalPen" class="text-danger">+0</td>
+                    <td id="acItemTotalWeight">0 lbs</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-card p-3 mb-3">
+          <div class="pf-banner-header">
+            <span>Saving Throws</span>
+            <span class="pf-banner-sub">Click Total to Roll Save</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle text-center mb-0" style="min-width: 440px;">
+              <thead>
+                <tr class="text-body-secondary small text-uppercase font-monospace">
+                  <th class="text-start">Save Type</th>
+                  <th style="width: 68px;">Total</th>
+                  <th style="width: 68px;">Base</th>
+                  <th style="width: 68px;">Ability</th>
+                  <th style="width: 68px;">Magic</th>
+                  <th style="width: 68px;">Misc</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr>
+                  <td class="text-start">
+                    <div class="d-flex align-items-center gap-1_5">
+                      <span class="badge bg-label-danger font-monospace">FORT</span>
+                      <strong class="text-heading small">Fortitude</strong>
+                    </div>
+                    <small class="text-body-secondary font-monospace" style="font-size: 0.68rem;">(Constitution)</small>
+                  </td>
+                  <td>
+                    <div class="pf-mod-box font-monospace fw-bold text-danger btn-roll-save pf-save-box" data-save="fort" id="saveTotal_fort">+2</div>
+                  </td>
+                  <td><input type="number" id="saveBase_fort" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="2" /></td>
+                  <td><input type="number" id="saveAbility_fort" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                  <td><input type="number" id="saveMagic_fort" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                  <td><input type="number" id="saveMisc_fort" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                </tr>
+
+                <tr>
+                  <td class="text-start">
+                    <div class="d-flex align-items-center gap-1_5">
+                      <span class="badge bg-label-success font-monospace">REF</span>
+                      <strong class="text-heading small">Reflex</strong>
+                    </div>
+                    <small class="text-body-secondary font-monospace" style="font-size: 0.68rem;">(Dexterity)</small>
+                  </td>
+                  <td>
+                    <div class="pf-mod-box font-monospace fw-bold text-success btn-roll-save pf-save-box" data-save="ref" id="saveTotal_ref">+0</div>
+                  </td>
+                  <td><input type="number" id="saveBase_ref" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                  <td><input type="number" id="saveAbility_ref" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                  <td><input type="number" id="saveMagic_ref" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                  <td><input type="number" id="saveMisc_ref" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                </tr>
+
+                <tr>
+                  <td class="text-start">
+                    <div class="d-flex align-items-center gap-1_5">
+                      <span class="badge bg-label-info font-monospace">WILL</span>
+                      <strong class="text-heading small">Will</strong>
+                    </div>
+                    <small class="text-body-secondary font-monospace" style="font-size: 0.68rem;">(Wisdom)</small>
+                  </td>
+                  <td>
+                    <div class="pf-mod-box font-monospace fw-bold text-info btn-roll-save pf-save-box" data-save="will" id="saveTotal_will">+2</div>
+                  </td>
+                  <td><input type="number" id="saveBase_will" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="2" /></td>
+                  <td><input type="number" id="saveAbility_will" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                  <td><input type="number" id="saveMagic_will" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                  <td><input type="number" id="saveMisc_will" class="form-control form-control-sm pf-box-input pf-save-box font-monospace text-center" value="0" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pt-3 mt-3 border-top border-secondary border-opacity-20" id="sectionIntegratedSaveItems">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap" style="font-size: 0.75rem;">
+                <span class="badge bg-label-warning font-monospace py-1 px-2 d-inline-flex align-items-center gap-1 shadow-xs" id="badgeActiveResistance">
+                  <i class="icon-base ti tabler-shield-spark fs-6"></i>
+                  <span>Active Resistance Item:</span>
+                  <strong id="lblActiveResistanceName" class="text-heading ms-1">None</strong>
+                </span>
+                <span class="badge bg-label-primary font-monospace py-1 px-2 d-inline-flex align-items-center gap-1 shadow-xs" id="badgeActiveSaveBonuses">
+                  <span>Added Bonus:</span>
+                  <strong id="lblActiveSaveBonusesText" class="text-heading ms-1">Fort +0 | Ref +0 | Will +0</strong>
+                </span>
+              </div>
+              <button type="button" class="btn btn-xs btn-label-warning rounded-pill px-2" id="btnAddSaveItemRow">
+                <i class="icon-base ti tabler-plus me-1"></i> Add Save Item
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-sm align-middle text-center mb-0" id="tableSaveItems" style="font-size: 0.76rem; min-width: 480px;">
+                <thead>
+                  <tr class="text-body-secondary font-monospace text-uppercase" style="font-size: 0.68rem;">
+                    <th style="width: 58px;">Active</th>
+                    <th class="text-start">Item Name</th>
+                    <th style="width: 100px;">Save Type</th>
+                    <th style="width: 100px;">Bonus Type</th>
+                    <th style="width: 52px;">Bonus</th>
+                    <th style="width: 48px;">Wt</th>
+                    <th style="width: 26px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="saveItemsTbody"></tbody>
+                <tfoot>
+                  <tr class="fw-bold font-monospace bg-body border-top">
+                    <td class="text-center"><span class="badge bg-label-success py-0 px-1" style="font-size: 0.62rem;">ACTIVE</span></td>
+                    <td class="text-start" colspan="3">EQUIPPED RESISTANCE TOTAL:</td>
+                    <td id="saveItemTotalBonus" class="text-warning">+0</td>
+                    <td id="saveItemTotalWeight">0 lbs</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-card p-3 mb-3">
+          <div class="pf-banner-header">
+            <span>BAB & Combat Maneuvers (CMB / CMD)</span>
+            <span class="pf-banner-sub">Click CMB to Roll Check</span>
+          </div>
+
+          <div class="row g-2 text-center">
+            <div class="col-6 col-sm-3">
+              <label class="form-label small text-body-secondary fw-semibold mb-1 d-block text-truncate">Base Attack (BAB)</label>
+              <input type="text" id="sheetBabInput" class="form-control pf-box-input font-monospace text-center fw-bold fs-5 text-primary w-100" style="height: 44px;" value="+1" />
+              <small class="text-body-secondary font-monospace d-block mt-0_5" style="font-size: 0.65rem;">Class BAB</small>
+            </div>
+
+            <div class="col-6 col-sm-3">
+              <label class="form-label small text-body-secondary fw-semibold mb-1 d-block text-truncate">Spell Resist (SR)</label>
+              <input type="text" id="sheetSrInput" class="form-control pf-box-input font-monospace text-center fs-5 text-warning w-100" style="height: 44px;" placeholder="—" />
+              <small class="text-body-secondary font-monospace d-block mt-0_5" style="font-size: 0.65rem;">Race / Item</small>
+            </div>
+
+            <div class="col-6 col-sm-3">
+              <label class="form-label small text-body-secondary fw-semibold mb-1 d-block text-truncate">CMB (Attack)</label>
+              <div class="pf-mod-box font-monospace fw-bold fs-5 text-heading cursor-pointer d-flex align-items-center justify-content-center w-100" style="height: 44px;" id="btnRollCmb" title="Roll CMB (d20)">
+                <span id="sheetCmbTotal">+1</span>
+              </div>
+              <small class="text-body-secondary font-monospace d-block mt-0_5" style="font-size: 0.65rem;">BAB + STR + Size</small>
+            </div>
+
+            <div class="col-6 col-sm-3">
+              <label class="form-label small text-body-secondary fw-semibold mb-1 d-block text-truncate">CMD (Defense)</label>
+              <div class="pf-box-input font-monospace fw-bold fs-5 text-info d-flex align-items-center justify-content-center w-100" style="height: 44px;" id="sheetCmdTotal">11</div>
+              <small class="text-body-secondary font-monospace d-block mt-0_5" style="font-size: 0.65rem;">10 + BAB + STR + DEX</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-card p-3 mb-3">
+          <div class="pf-banner-header">
+            <span>Weapons & Attacks</span>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-xs btn-label-primary rounded-pill px-2" id="btnAddWeaponRow">
+                <i class="icon-base ti tabler-plus me-1"></i> Add Weapon
+              </button>
+            </div>
+          </div>
+
+          <div id="weaponsContainer">
+
+            <div class="pf-weapon-block weapon-row" data-idx="1">
+              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                <div class="flex-grow-1">
+                  <input type="text" class="form-control form-control-sm pf-box-input text-start px-2 fw-bold wp-name" placeholder="Weapon Name" value="Longsword +1" style="font-size: 0.95rem;" />
+                </div>
+                <div style="min-width: 120px;">
+                  <select class="form-select form-select-sm pf-box-input px-1 wp-atk-type">
+                    <option value="melee" selected>Melee (STR)</option>
+                    <option value="ranged">Ranged (DEX)</option>
+                  </select>
+                </div>
+                <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-weapon" title="Delete Weapon">
+                  <i class="icon-base ti tabler-trash fs-5"></i>
+                </button>
+              </div>
+
+              <div class="row g-1_5 align-items-center mb-2 font-monospace small">
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Damage Type</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-type" placeholder="Slashing" value="Slashing" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Base Die</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-base-die" placeholder="1d8" value="1d8" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Range</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-range" placeholder="—" value="—" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Enh (+)</label>
+                  <input type="number" class="form-control form-control-sm pf-box-input wp-enh text-center px-1" min="0" max="5" value="1" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Atk Misc</label>
+                  <input type="number" class="form-control form-control-sm pf-box-input wp-atk-misc text-center px-1" value="0" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Dmg Misc</label>
+                  <input type="number" class="form-control form-control-sm pf-box-input wp-dmg-misc text-center px-1" value="0" />
+                </div>
+                <div class="col-6 col-sm-3 mt-1">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Crit Threat</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-crit-range text-center px-1" placeholder="19-20" value="19-20" />
+                </div>
+                <div class="col-6 col-sm-3 mt-1">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Multiplier</label>
+                  <select class="form-select form-select-sm pf-box-input wp-crit-mult text-center px-1">
+                    <option value="2" selected>x2</option>
+                    <option value="3">x3</option>
+                    <option value="4">x4</option>
+                  </select>
+                </div>
+                <div class="col-12 col-sm-6 mt-1">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Ammunition</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-ammo text-start px-2" placeholder="—" value="" />
+                </div>
+              </div>
+
+              <div class="row g-2 text-center">
+                <div class="col-12 col-sm-4">
+                  <div class="pf-mod-box font-monospace fw-bold text-primary py-1_5 px-2 w-100 cursor-pointer wp-atk-total" title="Click to roll attack check!">
+                    +0
+                  </div>
+                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-atk-formula">BAB+STR+Enh</span></small>
+                </div>
+                <div class="col-6 col-sm-4">
+                  <div class="pf-box-input font-monospace fw-bold text-warning py-1_5 wp-dmg-total">
+                    1d8+0
+                  </div>
+                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-dmg-formula">Die+STR+Enh</span></small>
+                </div>
+                <div class="col-6 col-sm-4">
+                  <div class="pf-box-input font-monospace fw-bold text-danger py-1_5 wp-crit-dmg-total">
+                    2d8+0
+                  </div>
+                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-crit-dmg-formula">x2</span></small>
+                </div>
+              </div>
+            </div>
+
+            <div class="pf-weapon-block weapon-row" data-idx="2">
+              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                <div class="flex-grow-1">
+                  <input type="text" class="form-control form-control-sm pf-box-input text-start px-2 fw-bold wp-name" placeholder="Weapon Name" value="Heavy Crossbow" style="font-size: 0.95rem;" />
+                </div>
+                <div style="min-width: 120px;">
+                  <select class="form-select form-select-sm pf-box-input px-1 wp-atk-type">
+                    <option value="melee">Melee (STR)</option>
+                    <option value="ranged" selected>Ranged (DEX)</option>
+                  </select>
+                </div>
+                <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-weapon" title="Delete Weapon">
+                  <i class="icon-base ti tabler-trash fs-5"></i>
+                </button>
+              </div>
+
+              <div class="row g-1_5 align-items-center mb-2 font-monospace small">
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Damage Type</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-type" placeholder="Piercing" value="Piercing" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Base Die</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-base-die" placeholder="1d10" value="1d10" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Range</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-range" placeholder="80 ft." value="80 ft." />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Enh (+)</label>
+                  <input type="number" class="form-control form-control-sm pf-box-input wp-enh text-center px-1" min="0" max="5" value="0" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Atk Misc</label>
+                  <input type="number" class="form-control form-control-sm pf-box-input wp-atk-misc text-center px-1" value="0" />
+                </div>
+                <div class="col-4 col-sm-2">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Dmg Misc</label>
+                  <input type="number" class="form-control form-control-sm pf-box-input wp-dmg-misc text-center px-1" value="0" />
+                </div>
+                <div class="col-6 col-sm-3 mt-1">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Crit Threat</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-crit-range text-center px-1" placeholder="19-20" value="19-20" />
+                </div>
+                <div class="col-6 col-sm-3 mt-1">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Multiplier</label>
+                  <select class="form-select form-select-sm pf-box-input wp-crit-mult text-center px-1">
+                    <option value="2" selected>x2</option>
+                    <option value="3">x3</option>
+                    <option value="4">x4</option>
+                  </select>
+                </div>
+                <div class="col-12 col-sm-6 mt-1">
+                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Ammunition</label>
+                  <input type="text" class="form-control form-control-sm pf-box-input wp-ammo text-start px-2" placeholder="30 bolts" value="30 bolts" />
+                </div>
+              </div>
+
+              <div class="row g-2 text-center">
+                <div class="col-12 col-sm-4">
+                  <div class="pf-mod-box font-monospace fw-bold text-primary py-1_5 px-2 w-100 cursor-pointer wp-atk-total" title="Click to roll attack check!">
+                    +0
+                  </div>
+                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-atk-formula">BAB+DEX+Enh</span></small>
+                </div>
+                <div class="col-6 col-sm-4">
+                  <div class="pf-box-input font-monospace fw-bold text-warning py-1_5 wp-dmg-total">
+                    1d10+0
+                  </div>
+                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-dmg-formula">Die+Enh</span></small>
+                </div>
+                <div class="col-6 col-sm-4">
+                  <div class="pf-box-input font-monospace fw-bold text-danger py-1_5 wp-crit-dmg-total">
+                    2d10+0
+                  </div>
+                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-crit-dmg-formula">x2</span></small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="paneSkills" class="col-12 col-xl-4 pf-section-pane">
+        <div class="pf-card p-3 p-md-4 h-100">
+
+          <div class="pf-banner-header">
+            <span>Skills</span>
+            <div class="d-flex align-items-center gap-1_5">
+              <span class="badge bg-primary text-white font-monospace" id="skillRanksPoolBadge">
+                <span id="spentSkillRanks">0</span> / <span id="totalAvailableSkillRanks">0</span> Ranks
+              </span>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between p-2 mb-2 rounded bg-body border small">
+            <div class="d-flex align-items-center gap-2">
+              <i class="icon-base ti tabler-info-circle text-primary fs-5"></i>
+              <span><strong>Class Skills:</strong> Grants +3 bonus with 1+ rank.</span>
+            </div>
+            <span class="badge bg-label-info font-monospace" id="lblClassSkillRankFormula">2+INT x Lvl</span>
+          </div>
+
+          <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text bg-body border-secondary border-opacity-25 text-body-secondary"><i class="icon-base ti tabler-search"></i></span>
+            <input type="text" class="form-control pf-box-input text-start px-2 skill-search-filter" placeholder="Filter skills by name..." />
+          </div>
+
+          <div class="table-responsive pf-scroll" style="max-height: 800px;">
+            <table class="pf-skills-table" id="tableSkills">
+              <thead>
+                <tr>
+                  <th style="width: 32px;" class="text-center" title="Class Skill">CS</th>
+                  <th>Skill Name</th>
+                  <th style="width: 60px;" class="text-center" title="Total">Total</th>
+                  <th style="width: 55px;" class="text-center">Mod</th>
+                  <th style="width: 50px;" class="text-center">Ranks</th>
+                  <th style="width: 50px;" class="text-center">Misc</th>
+                  <th style="width: 36px;" class="text-center">Roll</th>
+                </tr>
+              </thead>
+              <tbody id="skillsTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="mt-3 pt-2 border-top border-secondary border-opacity-20">
+            <label class="form-label small text-body-secondary fw-semibold mb-1">Conditional Skill Modifiers</label>
+            <textarea id="sheetSkillConditional" class="form-control form-control-sm pf-box-input text-start px-2 mb-2" rows="2" placeholder="e.g. +2 Perception to find traps, +1 Diplomacy against Elves..."></textarea>
+
+            <label class="form-label small text-body-secondary fw-semibold mb-1">Languages</label>
+            <input type="text" id="sheetLanguages" class="form-control form-control-sm pf-box-input text-start px-2 font-monospace" placeholder="Common, Elven, Celestial..." value="Common" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+
+      <div id="paneGear" class="col-12 col-xl-8 pf-section-pane">
+        <div class="row g-3">
+
+          <div class="col-12 col-md-6">
+
+            <div class="pf-card p-3 mb-3">
+              <div class="pf-banner-header">
+                <span>Gear & Equipment</span>
+                <button type="button" class="btn btn-xs btn-label-primary rounded-pill px-2" id="btnAddGearRow">
+                  <i class="icon-base ti tabler-plus"></i> Add Item
+                </button>
+              </div>
+
+              <div class="pf-scroll" style="max-height: 280px;" id="gearItemsContainer">
+                <div class="d-flex align-items-center gap-1 mb-1">
+                  <input type="text" class="form-control form-control-sm pf-box-input pf-input-compact text-start gear-name" placeholder="Item Name" value="Backpack, Masterwork" />
+                  <input type="number" class="form-control form-control-sm pf-box-input pf-input-compact text-center gear-wt font-monospace" style="width: 60px;" placeholder="Wt" value="2" />
+                  <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-gear"><i class="icon-base ti tabler-x"></i></button>
+                </div>
+                <div class="d-flex align-items-center gap-1 mb-1">
+                  <input type="text" class="form-control form-control-sm pf-box-input pf-input-compact text-start gear-name" placeholder="Item Name" value="Bedroll & Blanket" />
+                  <input type="number" class="form-control form-control-sm pf-box-input pf-input-compact text-center gear-wt font-monospace" style="width: 60px;" placeholder="Wt" value="5" />
+                  <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-gear"><i class="icon-base ti tabler-x"></i></button>
+                </div>
+                <div class="d-flex align-items-center gap-1 mb-1">
+                  <input type="text" class="form-control form-control-sm pf-box-input pf-input-compact text-start gear-name" placeholder="Item Name" value="Rations, Trail (5 days)" />
+                  <input type="number" class="form-control form-control-sm pf-box-input pf-input-compact text-center gear-wt font-monospace" style="width: 60px;" placeholder="Wt" value="5" />
+                  <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-gear"><i class="icon-base ti tabler-x"></i></button>
+                </div>
+                <div class="d-flex align-items-center gap-1 mb-1">
+                  <input type="text" class="form-control form-control-sm pf-box-input pf-input-compact text-start gear-name" placeholder="Item Name" value="Waterskin & Torches (3)" />
+                  <input type="number" class="form-control form-control-sm pf-box-input pf-input-compact text-center gear-wt font-monospace" style="width: 60px;" placeholder="Wt" value="7" />
+                  <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-gear"><i class="icon-base ti tabler-x"></i></button>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between p-2 rounded bg-body border mt-2 font-monospace">
+                <strong class="text-heading small">TOTAL WEIGHT:</strong>
+                <span class="badge bg-label-primary fs-6" id="lblTotalGearWeight">74 lbs</span>
+              </div>
+            </div>
+
+            <div class="pf-card p-3 mb-3">
+              <div class="pf-banner-header">
+                <span>Carrying Capacity</span>
+                <span class="badge bg-label-warning font-monospace" id="lblCarryingStrScore">STR 16</span>
+              </div>
+
+              <div class="row g-2 text-center font-monospace mb-2">
+                <div class="col-4">
+                  <div class="p-2 rounded bg-body border">
+                    <span class="d-block small text-success fw-bold" style="font-size: 0.65rem;">LIGHT LOAD</span>
+                    <span class="fw-bold" id="capLight">≤ 76 lbs</span>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-2 rounded bg-body border">
+                    <span class="d-block small text-warning fw-bold" style="font-size: 0.65rem;">MEDIUM LOAD</span>
+                    <span class="fw-bold" id="capMedium">77-153 lbs</span>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-2 rounded bg-body border">
+                    <span class="d-block small text-danger fw-bold" style="font-size: 0.65rem;">HEAVY LOAD</span>
+                    <span class="fw-bold" id="capHeavy">154-230 lbs</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-1 text-center font-monospace" style="font-size: 0.72rem;">
+                <div class="col-4">
+                  <div class="p-1 rounded bg-body border">
+                    <span class="text-body-secondary d-block" style="font-size: 0.62rem;">LIFT OVER HEAD</span>
+                    <strong id="capLiftHead">230 lbs</strong>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-1 rounded bg-body border">
+                    <span class="text-body-secondary d-block" style="font-size: 0.62rem;">LIFT OFF GROUND</span>
+                    <strong id="capLiftGround">460 lbs</strong>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-1 rounded bg-body border">
+                    <span class="text-body-secondary d-block" style="font-size: 0.62rem;">DRAG OR PUSH</span>
+                    <strong id="capDrag">1,150 lbs</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pf-card p-3">
+              <div class="pf-banner-header">
+                <span>Money & Wealth</span>
+                <span class="pf-banner-sub">Coins</span>
+              </div>
+              <div class="row g-2 font-monospace text-center">
+                <div class="col-3">
+                  <label class="form-label small text-warning mb-1 fw-bold">CP</label>
+                  <input type="number" id="sheetMoneyCp" class="form-control form-control-sm pf-box-input" value="15" />
+                </div>
+                <div class="col-3">
+                  <label class="form-label small text-body-secondary mb-1 fw-bold">SP</label>
+                  <input type="number" id="sheetMoneySp" class="form-control form-control-sm pf-box-input" value="48" />
+                </div>
+                <div class="col-3">
+                  <label class="form-label small text-warning mb-1 fw-bold">GP</label>
+                  <input type="number" id="sheetMoneyGp" class="form-control form-control-sm pf-box-input text-warning fw-bold" value="120" />
+                </div>
+                <div class="col-3">
+                  <label class="form-label small text-info mb-1 fw-bold">PP</label>
+                  <input type="number" id="sheetMoneyPp" class="form-control form-control-sm pf-box-input text-info fw-bold" value="5" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+
+            <div class="pf-card p-3 mb-3">
+              <div class="pf-banner-header d-flex justify-content-between align-items-center">
+                <div>
+                  <span>Character Traits</span>
+                  <span class="pf-banner-sub">Rank & Character Traits</span>
+                </div>
+                <button type="button" class="btn btn-xs btn-label-primary rounded-pill px-2" id="btnAddTraitRow">
+                  <i class="icon-base ti tabler-plus"></i> Add Trait
+                </button>
+              </div>
+              <div class="d-flex flex-column gap-2" id="traitsSlotsContainer">
+
+                <div class="p-2 rounded border bg-body trait-slot-card position-relative" id="sheetTraitCard_uye" style="border-left: 3px solid rgba(115, 103, 240, 0.8) !important;">
+                  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <span class="badge bg-label-info font-monospace py-1 px-2 flex-shrink-0">Slot 1 • Member</span>
+
+                      <div class="trait-filled-block flex-grow-1 min-w-0" id="sheetTraitFilled_uye">
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                          <span class="fw-bold text-heading small text-truncate" id="sheetTraitDisplay_uye"></span>
+                          <span class="badge bg-label-secondary font-monospace py-0 px-1 text-xs d-none" id="sheetTraitCat_uye" style="font-size: 0.65rem;"></span>
+                          <a href="#" target="_blank" class="text-body-secondary text-hover-primary small d-none" id="sheetTraitLink_uye" title="View source">
+                            <i class="icon-base ti tabler-external-link" style="font-size: 0.8rem;"></i>
+                          </a>
+                        </div>
+                        <small class="text-body-secondary d-block text-truncate" style="font-size: 0.68rem;" id="sheetTraitDescText_uye"></small>
+                      </div>
+
+                      <div class="trait-empty-block text-body-secondary small d-none cursor-pointer" id="sheetTraitEmpty_uye">
+                        <span class="fst-italic opacity-75">Empty (No trait selected)</span>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                      <button type="button" class="btn btn-icon btn-text-primary btn-xs btn-edit-trait" data-slot="uye" title="Enter / Edit Trait">
+                        <i class="icon-base ti tabler-pencil"></i>
+                      </button>
+                      <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-trait" data-slot="uye" title="Delete Trait">
+                        <i class="icon-base ti tabler-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <input type="hidden" class="trait-name-input" id="sheetTraitName_uye" value="" />
+                  <input type="hidden" class="trait-desc-input" id="sheetTraitDesc_uye" value="" />
+                  <input type="hidden" class="trait-cat-input" id="sheetTraitCatInput_uye" value="" />
+                  <input type="hidden" class="trait-url-input" id="sheetTraitUrl_uye" value="" />
+                </div>
+
+                <div class="p-2 rounded border bg-body trait-slot-card position-relative" id="sheetTraitCard_kidemli" style="border-left: 3px solid rgba(255, 171, 0, 0.8) !important;">
+                  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <span class="badge bg-label-warning font-monospace py-1 px-2 flex-shrink-0">Slot 2 • Senior</span>
+
+                      <div class="trait-filled-block flex-grow-1 min-w-0" id="sheetTraitFilled_kidemli">
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                          <span class="fw-bold text-heading small text-truncate" id="sheetTraitDisplay_kidemli"></span>
+                          <span class="badge bg-label-secondary font-monospace py-0 px-1 text-xs d-none" id="sheetTraitCat_kidemli" style="font-size: 0.65rem;"></span>
+                          <a href="#" target="_blank" class="text-body-secondary text-hover-primary small d-none" id="sheetTraitLink_kidemli" title="View source">
+                            <i class="icon-base ti tabler-external-link" style="font-size: 0.8rem;"></i>
+                          </a>
+                        </div>
+                        <small class="text-body-secondary d-block text-truncate" style="font-size: 0.68rem;" id="sheetTraitDescText_kidemli"></small>
+                      </div>
+
+                      <div class="trait-empty-block text-body-secondary small d-none cursor-pointer" id="sheetTraitEmpty_kidemli">
+                        <span class="fst-italic opacity-75">Empty (No trait selected)</span>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                      <button type="button" class="btn btn-icon btn-text-primary btn-xs btn-edit-trait" data-slot="kidemli" title="Enter / Edit Trait">
+                        <i class="icon-base ti tabler-pencil"></i>
+                      </button>
+                      <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-trait" data-slot="kidemli" title="Delete Trait">
+                        <i class="icon-base ti tabler-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <input type="hidden" class="trait-name-input" id="sheetTraitName_kidemli" value="" />
+                  <input type="hidden" class="trait-desc-input" id="sheetTraitDesc_kidemli" value="" />
+                  <input type="hidden" class="trait-cat-input" id="sheetTraitCatInput_kidemli" value="" />
+                  <input type="hidden" class="trait-url-input" id="sheetTraitUrl_kidemli" value="" />
+                </div>
+
+                <div class="p-2 rounded border bg-body trait-slot-card position-relative" id="sheetTraitCard_uzman" style="border-left: 3px solid rgba(40, 199, 111, 0.8) !important;">
+                  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <span class="badge bg-label-success font-monospace py-1 px-2 flex-shrink-0">Slot 3 • Expert</span>
+
+                      <div class="trait-filled-block flex-grow-1 min-w-0" id="sheetTraitFilled_uzman">
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                          <span class="fw-bold text-heading small text-truncate" id="sheetTraitDisplay_uzman"></span>
+                          <span class="badge bg-label-secondary font-monospace py-0 px-1 text-xs d-none" id="sheetTraitCat_uzman" style="font-size: 0.65rem;"></span>
+                          <a href="#" target="_blank" class="text-body-secondary text-hover-primary small d-none" id="sheetTraitLink_uzman" title="View source">
+                            <i class="icon-base ti tabler-external-link" style="font-size: 0.8rem;"></i>
+                          </a>
+                        </div>
+                        <small class="text-body-secondary d-block text-truncate" style="font-size: 0.68rem;" id="sheetTraitDescText_uzman"></small>
+                      </div>
+
+                      <div class="trait-empty-block text-body-secondary small d-none cursor-pointer" id="sheetTraitEmpty_uzman">
+                        <span class="fst-italic opacity-75">Empty (No trait selected)</span>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                      <button type="button" class="btn btn-icon btn-text-primary btn-xs btn-edit-trait" data-slot="uzman" title="Enter / Edit Trait">
+                        <i class="icon-base ti tabler-pencil"></i>
+                      </button>
+                      <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-trait" data-slot="uzman" title="Delete Trait">
+                        <i class="icon-base ti tabler-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <input type="hidden" class="trait-name-input" id="sheetTraitName_uzman" value="" />
+                  <input type="hidden" class="trait-desc-input" id="sheetTraitDesc_uzman" value="" />
+                  <input type="hidden" class="trait-cat-input" id="sheetTraitCatInput_uzman" value="" />
+                  <input type="hidden" class="trait-url-input" id="sheetTraitUrl_uzman" value="" />
+                </div>
+              </div>
+
+              <div id="customTraitsContainer" class="d-flex flex-column gap-2 mt-2"></div>
+            </div>
+
+            <div class="pf-card p-3 mb-3">
+              <div class="pf-banner-header">
+                <span>Feats</span>
+                <button type="button" class="btn btn-xs btn-label-primary rounded-pill px-2" id="btnAddFeatRow">
+                  <i class="icon-base ti tabler-plus"></i> Add Feat
+                </button>
+              </div>
+              <div class="pf-scroll" style="max-height: 250px;" id="featsContainer"></div>
+            </div>
+
+            <div class="pf-card p-3">
+              <div class="pf-banner-header">
+                <span>Special Abilities</span>
+                <button type="button" class="btn btn-xs btn-label-primary rounded-pill px-2" id="btnAddSpecialRow">
+                  <i class="icon-base ti tabler-plus"></i> Add Special
+                </button>
+              </div>
+              <div class="pf-scroll" style="max-height: 250px;" id="specialsContainer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="paneSpells" class="col-12 col-xl-4 pf-section-pane">
+        <div class="pf-card p-3 p-md-4 h-100">
+          <div class="pf-banner-header">
+            <span>Spells & Spell Slots</span>
+            <span class="pf-banner-sub" id="lblSpellCastingSub">Slots & DC</span>
+          </div>
+
+          <div class="row g-2 mb-3 align-items-center font-monospace small">
+            <div class="col-12 col-sm-6">
+              <label class="text-body-secondary" style="font-size: 0.68rem;">CASTING STAT</label>
+              <select id="sheetCastingStat" class="form-select form-select-sm pf-box-input px-2 text-start">
+                <option value="int">Intelligence (INT)</option>
+                <option value="wis">Wisdom (WIS)</option>
+                <option value="cha">Charisma (CHA)</option>
+                <option value="none">None (No Spells)</option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-6 text-center">
+              <label class="text-body-secondary" style="font-size: 0.68rem;">BASE SPELL DC</label>
+              <div class="pf-box-input text-warning fw-bold py-1" id="lblBaseSpellDc">—</div>
+            </div>
+          </div>
+
+          <div class="table-responsive mb-3">
+            <table class="table table-sm align-middle text-center mb-0" style="font-size: 0.78rem; min-width: 320px;">
+              <thead>
+                <tr class="text-body-secondary font-monospace text-uppercase" style="font-size: 0.70rem;">
+                  <th style="width: 15%;">Lvl</th>
+                  <th style="width: 22%;" title="Spells Known">Known</th>
+                  <th style="width: 21%;" title="Spell Save DC">Save DC</th>
+                  <th style="width: 22%;" title="Spells Per Day">Per Day</th>
+                  <th style="width: 20%;" title="Bonus Spells">Bonus</th>
+                </tr>
+              </thead>
+              <tbody class="font-monospace">
+                <tr id="spellRow_0">
+                  <td class="fw-bold text-primary">0</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_0">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_0">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_0">—</td>
+                </tr>
+                <tr id="spellRow_1">
+                  <td class="fw-bold text-primary">1st</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_1">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_1">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_1">—</td>
+                </tr>
+                <tr id="spellRow_2">
+                  <td class="fw-bold text-primary">2nd</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_2">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_2">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_2">—</td>
+                </tr>
+                <tr id="spellRow_3">
+                  <td class="fw-bold text-primary">3rd</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_3">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_3">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_3">—</td>
+                </tr>
+                <tr id="spellRow_4">
+                  <td class="fw-bold text-primary">4th</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_4">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_4">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_4">—</td>
+                </tr>
+                <tr id="spellRow_5">
+                  <td class="fw-bold text-primary">5th</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_5">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_5">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_5">—</td>
+                </tr>
+                <tr id="spellRow_6">
+                  <td class="fw-bold text-primary">6th</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_6">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_6">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_6">—</td>
+                </tr>
+                <tr id="spellRow_7">
+                  <td class="fw-bold text-primary">7th</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_7">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_7">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_7">—</td>
+                </tr>
+                <tr id="spellRow_8">
+                  <td class="fw-bold text-primary">8th</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_8">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_8">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_8">—</td>
+                </tr>
+                <tr id="spellRow_9">
+                  <td class="fw-bold text-primary">9th</td>
+                  <td class="text-body-secondary spell-known-val font-monospace" id="spellKnown_9">—</td>
+                  <td class="text-warning spell-dc-val fw-bold" id="spellDc_9">—</td>
+                  <td><input type="text" class="form-control form-control-sm pf-box-input pf-input-compact spell-per-day text-center mx-auto" style="width: 52px;" value="—" /></td>
+                  <td class="text-body-secondary spell-bonus-val fw-semibold" id="spellBonus_9">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pt-2 border-top border-secondary border-opacity-25">
+            <label class="form-label small text-body-secondary fw-semibold mb-1" style="font-size: 0.72rem;">Domains / Specialty School & Notes</label>
+            <textarea id="sheetSpellNotes" class="form-control form-control-sm pf-box-input text-start px-2" rows="3" placeholder="Domains, Bloodline Powers, School focus or prepared spells list..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="pf-mobile-dock">
+    <button type="button" class="pf-dock-btn active" data-target="paneCombat">
+      <i class="icon-base ti tabler-shield"></i>
+      <span>Combat</span>
+    </button>
+    <button type="button" class="pf-dock-btn" data-target="paneSkills">
+      <i class="icon-base ti tabler-award"></i>
+      <span>Skills</span>
+    </button>
+    <button type="button" class="pf-dock-btn" data-target="paneGear">
+      <i class="icon-base ti tabler-backpack"></i>
+      <span>Gear</span>
+    </button>
+    <button type="button" class="pf-dock-btn" data-target="paneSpells">
+      <i class="icon-base ti tabler-wand"></i>
+      <span>Spells</span>
+    </button>
+    <button type="button" class="pf-dock-btn" id="btnDockDice">
+      <i class="icon-base ti tabler-dice-6 text-warning"></i>
+      <span>Dice</span>
+    </button>
+  </nav>
+
+  <div class="modal fade" id="modalHpBreakdown" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content pf-card border shadow-lg">
+        <div class="modal-header border-bottom py-3">
+          <h5 class="modal-title fw-bold text-heading d-flex align-items-center gap-2">
+            <i class="icon-base ti tabler-heart-rate-monitor text-danger"></i>
+            <span>Hit Points (HP) Level Breakdown</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-3 p-md-4">
+          <div class="d-flex align-items-center justify-content-between p-2 mb-3 rounded bg-body border font-monospace">
+            <span class="text-body-secondary small">Class Hit Die:</span>
+            <strong class="text-warning fs-6" id="modalHpHitDie">d10</strong>
+          </div>
+          <div class="d-flex align-items-center justify-content-between p-2 mb-3 rounded bg-body border font-monospace">
+            <span class="text-body-secondary small">Constitution Modifier:</span>
+            <strong class="text-primary fs-6" id="modalHpConMod">+2</strong>
+          </div>
+
+          <div class="table-responsive pf-scroll mb-3" style="max-height: 260px;">
+            <table class="table table-sm text-center align-middle font-monospace mb-0" id="tableLevelHpBreakdown">
+              <thead>
+                <tr class="text-body-secondary small text-uppercase">
+                  <th>Level</th>
+                  <th>Die Result</th>
+                  <th>CON Bonus</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyLevelHpBreakdown"></tbody>
+            </table>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small text-body-secondary fw-semibold">Extra HP / Feat Bonus (Misc)</label>
+            <input type="number" id="sheetHpExtraMisc" class="form-control form-control-sm pf-box-input font-monospace text-center" value="0" />
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between pt-2 border-top flex-wrap gap-2">
+            <button type="button" class="btn btn-xs btn-label-secondary rounded-pill px-3" id="btnModalSetAverage">
+              Average
+            </button>
+            <button type="button" class="btn btn-xs btn-label-warning rounded-pill px-3" id="btnModalRollHp">
+              <i class="icon-base ti tabler-dice me-1"></i> Reroll
+            </button>
+            <div class="text-end">
+              <small class="text-body-secondary d-block" style="font-size: 0.68rem;">TOTAL MAX HP</small>
+              <strong class="text-primary fs-5 font-monospace" id="modalHpTotalMax">12 HP</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-dice-drawer p-3 animate__animated animate__fadeInUp" id="diceDrawer" style="display: none;">
+    <div class="d-flex align-items-center justify-content-between pb-2 mb-2 border-bottom border-secondary border-opacity-25">
+      <div class="d-flex align-items-center gap-1_5">
+        <i class="icon-base ti tabler-dice-6 text-warning fs-5"></i>
+        <strong class="text-heading small font-monospace">Dice Tray</strong>
+      </div>
+      <button type="button" class="btn-close btn-close-white small" id="btnCloseDiceDrawer" aria-label="Close"></button>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between gap-1 mb-3">
+      <button type="button" class="btn btn-outline-secondary pf-dice-btn p-0" onclick="rollDice(4)">d4</button>
+      <button type="button" class="btn btn-outline-secondary pf-dice-btn p-0" onclick="rollDice(6)">d6</button>
+      <button type="button" class="btn btn-outline-secondary pf-dice-btn p-0" onclick="rollDice(8)">d8</button>
+      <button type="button" class="btn btn-outline-secondary pf-dice-btn p-0" onclick="rollDice(10)">d10</button>
+      <button type="button" class="btn btn-outline-secondary pf-dice-btn p-0" onclick="rollDice(12)">d12</button>
+      <button type="button" class="btn btn-outline-primary pf-dice-btn p-0 fw-bold" onclick="rollDice(20)">d20</button>
+      <button type="button" class="btn btn-outline-warning pf-dice-btn p-0" onclick="rollDice(100)">%</button>
+    </div>
+
+    <div class="p-3 mb-2 rounded-3 text-center border" style="background: rgba(18, 19, 32, 0.9); border-color: rgba(226, 185, 111, 0.3) !important;">
+      <small class="text-body-secondary font-monospace d-block" id="diceRollLabel">Last Roll Result</small>
+      <h1 class="mb-0 fw-bold font-monospace text-warning display-4" id="diceRollValue">—</h1>
+      <small class="text-body-secondary font-monospace" id="diceRollBreakdown">Click any die above or any stat on the sheet to roll.</small>
+    </div>
+
+    <div class="pf-scroll" style="max-height: 120px;" id="diceRollHistory"></div>
+  </div>
+
+  <div class="modal fade" id="modalTrait" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content pf-card border shadow-lg">
+        <div class="modal-header border-bottom py-2_5">
+          <div class="d-flex align-items-center gap-2">
+            <i class="icon-base ti tabler-sparkles text-primary fs-5"></i>
+            <div>
+              <h5 class="modal-title fw-bold text-heading fs-6 mb-0" id="modalTraitTitle">Select / Enter Character Trait</h5>
+              <small class="text-body-secondary font-monospace" id="modalTraitSlotBadge" style="font-size: 0.72rem;">Slot 1 • Member</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-3 p-md-4">
+
+          <div class="mb-3">
+            <label class="form-label small text-body-secondary fw-semibold d-flex justify-content-between align-items-center">
+              <span>Search Pathfinder Database (1300+ Traits)</span>
+              <span class="badge bg-label-info font-monospace py-0" style="font-size: 0.65rem;">d20pfsrd DB</span>
+            </label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-body border-secondary border-opacity-25 text-body-secondary"><i class="icon-base ti tabler-search"></i></span>
+              <input type="text" id="modalTraitSearch" class="form-control pf-box-input text-start px-2" placeholder="e.g. Reactionary, Armor Expert, Savannah Child, Deft Dodger..." autocomplete="off" />
+              <button class="btn btn-outline-secondary px-2" type="button" id="btnClearTraitSearch" title="Clear Search">
+                <i class="icon-base ti tabler-x"></i>
+              </button>
+            </div>
+
+            <div id="modalTraitSearchResults" class="pf-scroll mt-1 border rounded bg-body p-1 d-none" style="max-height: 190px; overflow-y: auto;">
+            </div>
+          </div>
+
+          <hr class="border-secondary border-opacity-25 my-3" />
+
+          <div class="row g-2 mb-2">
+            <div class="col-12 col-md-8">
+              <label class="form-label small text-body-secondary fw-semibold">Trait Name <span class="text-danger">*</span></label>
+              <input type="text" id="modalTraitName" class="form-control form-control-sm pf-box-input text-start" placeholder="Trait name..." />
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label small text-body-secondary fw-semibold">Category</label>
+              <input type="text" id="modalTraitCategory" class="form-control form-control-sm pf-box-input text-start" placeholder="Combat, Magic, Social..." list="traitCategorySuggestions" />
+              <datalist id="traitCategorySuggestions">
+                <option value="Combat Traits">
+                <option value="Faith Traits">
+                <option value="Magic Traits">
+                <option value="Social Traits">
+                <option value="Race Traits">
+                <option value="Regional Traits">
+                <option value="Religion Traits">
+                <option value="Campaign Traits">
+                <option value="Equipment Traits">
+              </datalist>
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label small text-body-secondary fw-semibold">Description / Bonus Effect</label>
+            <textarea id="modalTraitDesc" class="form-control form-control-sm pf-box-input text-start" rows="3" placeholder="Trait effect, bonuses provided, or description..."></textarea>
+          </div>
+
+          <div>
+            <label class="form-label small text-body-secondary fw-semibold">Source / d20pfsrd URL (Optional)</label>
+            <input type="url" id="modalTraitUrl" class="form-control form-control-sm pf-box-input text-start" placeholder="https://www.d20pfsrd.com/traits/..." />
+          </div>
+        </div>
+
+        <div class="modal-footer border-top py-2 d-flex justify-content-between align-items-center">
+          <div>
+            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" id="btnModalDeleteTrait">
+              <i class="icon-base ti tabler-trash me-1"></i> Delete
+            </button>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" id="btnModalSaveTrait">
+              <i class="icon-base ti tabler-check me-1"></i> Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalCharacters" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content pf-card border shadow-lg">
+        <div class="modal-header border-bottom py-3">
+          <h5 class="modal-title fw-bold text-heading d-flex align-items-center gap-2">
+            <i class="icon-base ti tabler-users text-primary"></i>
+            <span>Saved Character Sheets</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-3 p-md-4">
+          <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-body border-secondary border-opacity-25 text-body-secondary"><i class="icon-base ti tabler-search"></i></span>
+              <input type="text" id="character-search-input" class="form-control pf-box-input text-start px-2" placeholder="Search character by name or class..." />
+            </div>
+            <button type="button" class="btn btn-sm btn-primary rounded-pill text-nowrap px-3" id="btn-modal-new-char">
+              <i class="icon-base ti tabler-plus me-1"></i> New
+            </button>
+          </div>
+          <div class="pf-scroll" style="max-height: 380px;">
+            <div id="characters-list-container" class="d-flex flex-column gap-2"></div>
+          </div>
+        </div>
+        <div class="modal-footer border-top py-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalAddMulticlass" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content pf-card border shadow-lg">
+        <div class="modal-header border-bottom py-2_5">
+          <h5 class="modal-title fw-bold text-heading fs-6 d-flex align-items-center gap-2">
+            <i class="icon-base ti tabler-plus text-warning"></i>
+            <span>Add Secondary Class</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-3">
+          <div class="mb-3">
+            <label class="form-label small text-body-secondary fw-semibold">Class</label>
+            <select id="modalAddMcSelect" class="form-select form-select-sm pf-box-input text-start px-2">
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small text-body-secondary fw-semibold">Initial Level</label>
+            <div class="input-group input-group-sm">
+              <button class="btn btn-outline-secondary px-2" type="button" id="btnModalMcLvlDown"><i class="icon-base ti tabler-minus"></i></button>
+              <input type="number" id="modalAddMcLvl" class="form-control form-control-sm pf-box-input font-monospace text-center fw-bold" min="1" max="20" value="1" />
+              <button class="btn btn-outline-secondary px-2" type="button" id="btnModalMcLvlUp"><i class="icon-base ti tabler-plus"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top py-2 d-flex justify-content-between">
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-sm btn-warning rounded-pill px-3" id="btnConfirmAddMc">Add Class</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="js/pf_data.js"></script>
+  <script src="js/app.js?v=2.2"></script>
+</body>
+</html>

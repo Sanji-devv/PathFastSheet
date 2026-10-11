@@ -1,0 +1,119 @@
+# ==============================================================================
+# PathFastSheet - Git Ignore Rules
+# ==============================================================================
+
+# --- Python Bytecode & Cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# --- Virtual Environments ---
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# --- Python Packaging, Distribution & Builds ---
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Testing & Coverage ---
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# --- Logs & Debug Output ---
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- FastSheet Generated Artifacts ---
+# Ignore generated character PDF exports
+characters/*.pdf
+characters/*_Character_Sheet.pdf
+
+# Ensure character JSON save files and base PDF template are always tracked
+!characters/*.json
+!Pathfinder-Character-Sheet-EDIT.pdf
+
+# --- Backup, Temporary & Swap Files ---
+*.bak
+*.pre_valiant.bak
+*.old
+*.orig
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+
+# --- IDEs, Text Editors & Project Configurations ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+
+# --- Operating System Files ---
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+
+# --- Optional Node/Frontend tool leftovers ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# AI
+.agents
+.agent
+
+# Characters folder
+characters/

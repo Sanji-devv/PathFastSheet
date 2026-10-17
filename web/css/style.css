@@ -906,6 +906,14 @@ input.pf-save-box {
   transition: all 0.2s ease-in-out;
   background-color: var(--pf-card-inner) !important;
 }
+.trait-slot-card .min-w-0 {
+  min-width: 0;
+}
+.trait-description {
+  font-size: 0.68rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
 .trait-slot-card:hover {
   border-color: rgba(226, 185, 111, 0.45) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);

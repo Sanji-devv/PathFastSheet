@@ -482,7 +482,7 @@ class Character:
         touch_ac = m_touch.group(1) if m_touch else str(self.basic.get('in-ac-touch', ''))
 
         m_ff = re.search(r'flat-footed\s+(\d+)', ac_raw)
-        ff_ac = m_ff.group(1) if m_ff else str(self.basic.get('in-ac-ff', ''))
+        ff_ac = m_ff.group(1) if m_ff else str(self.basic.get('in-ac-flat', self.basic.get('in-ac-ff', '')))
 
         armor_bonus = str(self.basic.get('in-ac-armor', ''))
         shield_bonus = str(self.basic.get('in-ac-shield', ''))
@@ -645,7 +645,7 @@ class Character:
         return get_carrying_capacity(self.str_score)
 
     def get_clean_gear(self) -> list:
-        cls_key = self.class_name.lower().strip()
+        cls_key = self.primary_class.lower().strip()
         expected_kit = CLASS_STARTING_KITS.get(
             cls_key,
             f"{self.class_name.title()}'s Kit" if self.class_name else "Adventurer's Kit"
@@ -688,7 +688,11 @@ class Character:
         gear_data = self.dynamic.get('gear') or self.basic.get('in-gear', '')
         raw_items = []
         if isinstance(gear_data, list):
-            raw_items = [str(g).strip() for g in gear_data if str(g).strip()]
+            raw_items = [
+                str(g.get('name', '') if isinstance(g, dict) else g).strip()
+                for g in gear_data
+                if (g.get('name', '') if isinstance(g, dict) else g)
+            ]
         elif isinstance(gear_data, str) and gear_data:
             raw_items = [g.strip() for g in gear_data.split(',') if g.strip()]
 
@@ -708,9 +712,8 @@ class Character:
             low = item.lower()
 
             if kit_pattern.search(item):
-                if not has_kit:
-                    clean.append(expected_kit)
-                    has_kit = True
+                clean.append(item)
+                has_kit = True
                 continue
 
             if low in excluded_names:
@@ -776,10 +779,10 @@ class Character:
             if not isinstance(w, dict):
                 continue
             name = w.get('name', '')
-            w_type = w.get('type', 'Melee')
-            existing_atk = w.get('attack', '')
-            existing_dmg = w.get('damage', '')
-            crit = w.get('crit', '20/x2')
+            w_type = w.get('atkType') or w.get('type', 'Melee')
+            existing_atk = w.get('attack') or w.get('atkBonus', '')
+            existing_dmg = w.get('damage') or w.get('dmg', '')
+            crit = w.get('crit') or f"{w.get('critRange', '20')}/x{w.get('critMult', 2)}"
             rng = w.get('range', '')
 
             clean_name = re.sub(r'^\+\d+\s+', '', name.lower()).strip()
@@ -882,11 +885,18 @@ class Character:
         return results
 
     def get_clean_feats(self) -> list:
-        feats_data = self.dynamic.get('feats') or self.basic.get('in-feats', '')
+        feats_data = self.dynamic.get('feats') or self.sheet_data.get('feats') or self.basic.get('in-feats', '')
         if isinstance(feats_data, list):
-            return [str(f).strip() for f in feats_data if str(f).strip()]
+            res = []
+            for f in feats_data:
+                if isinstance(f, dict):
+                    t = f.get('title') or f.get('name') or ''
+                    if t.strip(): res.append(t.strip())
+                elif str(f).strip():
+                    res.append(str(f).strip())
+            return res
         elif isinstance(feats_data, str) and feats_data:
-            flist = [f.strip() for f in feats_data.split(',') if f.strip()]
+            flist = [f.strip() for f in re.split(r',\s*(?![^()]*\))', feats_data) if f.strip()]
             clean = []
             i = 0
             while i < len(flist):

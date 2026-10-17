@@ -77,6 +77,8 @@ python main.py
 
 The server will initialize and automatically open your default browser at `http://localhost:5050`.
 
+On a fresh installation, the sheet opens with the editable **Caspian Blade (Omdura 12)** example from the included Pathfinder character sheet. Open **Characters** to reload it later, or choose **New** to start with a blank sheet. Your saved characters remain local to this project.
+
 #### 4. Command Line Options
 ```bash
 python main.py --port 5050       # Specify custom port (default: 5050)

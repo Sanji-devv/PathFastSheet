@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
     { key: 'climb', name: 'Climb', ab: 'str', armorPen: true },
     { key: 'craft1', name: 'Craft', ab: 'int', armorPen: false, isCraft: true },
     { key: 'craft2', name: 'Craft', ab: 'int', armorPen: false, isCraft: true },
+    { key: 'craft3', name: 'Craft', ab: 'int', armorPen: false, isCraft: true },
     { key: 'diplomacy', name: 'Diplomacy', ab: 'cha', armorPen: false },
     { key: 'disable_device', name: 'Disable Device *', ab: 'dex', armorPen: true },
     { key: 'disguise', name: 'Disguise', ab: 'cha', armorPen: false },
@@ -249,7 +250,23 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
     try {
-      return JSON.parse(raw || '[]');
+      const list = JSON.parse(raw || '[]');
+      if (Array.isArray(list)) {
+        list.forEach(c => {
+          if (c && c.sheetData && Array.isArray(c.sheetData.weapons)) {
+            c.sheetData.weapons.forEach(w => {
+              if (w && w.name === 'Longsword +1') {
+                w.name = 'Longsword';
+                if (w.enh === 1) w.enh = 0;
+              }
+            });
+            if (c.sheetData.weapons.length > 1 && c.sheetData.weapons.some(w => w.name === 'Longsword')) {
+              c.sheetData.weapons = c.sheetData.weapons.filter(w => !(w.name === 'Heavy Crossbow' && (w.ammo === '30 bolts' || !w.ammo)));
+            }
+          }
+        });
+      }
+      return list;
     } catch (e) {
       return [];
     }
@@ -277,6 +294,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const urlParams = new URLSearchParams(window.location.search);
   let charId = urlParams.get('id');
   let charNameParam = urlParams.get('name');
+  const isNewRequest = urlParams.get('new') === '1';
   let chars = getCharacters();
   let currentChar = null;
 
@@ -380,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
     currentChar = chars.find(c => c.active) || chars[0];
   }
 
+  const shouldLoadExample = chars.length === 0 && !charId && !charNameParam && !isNewRequest && !cookieActiveCharId && !cookieActiveCharName;
   const isNewSheet = !currentChar || (!charId && !charNameParam && !cookieActiveCharId && !cookieActiveCharName);
   if (!currentChar) {
     currentChar = {
@@ -409,8 +428,8 @@ document.addEventListener('DOMContentLoaded', function () {
     currentChar.name = '';
   }
 
-  sData.deity = '';
-  sData.homeland = '';
+  sData.deity = sData.deity || currentChar.basic?.['in-deity'] || '';
+  sData.homeland = sData.homeland || currentChar.basic?.['in-homeland'] || '';
 
   if (Array.isArray(currentChar.multiclass) && currentChar.multiclass.length > 0) {
     multiclassState = currentChar.multiclass;
@@ -467,13 +486,14 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('sheetAlignmentSelect').value = normalizeAlignment(sData.alignment || 'LG');
   document.getElementById('sheetPlayerName').value = (!isNewSheet && sData.player) ? sData.player : '';
   document.getElementById('sheetRaceInput').value = cleanText(currentChar.race) || 'Human';
-  document.getElementById('sheetDeityInput').value = '';
-  document.getElementById('sheetHomelandInput').value = '';
+  document.getElementById('sheetDeityInput').value = (!isNewSheet && sData.deity) ? sData.deity : '';
+  document.getElementById('sheetHomelandInput').value = (!isNewSheet && sData.homeland) ? sData.homeland : '';
   document.getElementById('sheetSizeSelect').value = sData.size || 'Medium';
   const cookieGender = getCookie('pf_active_gender');
   document.getElementById('sheetGenderInput').value = (sData.gender === 'Female' || cookieGender === 'Female') ? 'Female' : 'Male';
   document.getElementById('sheetAgeInput').value = sData.age || '25';
   document.getElementById('sheetHeightInput').value = sData.height || '6 ft. 1 in.';
+  document.getElementById('sheetWeightInput').value = sData.weight || '';
   document.getElementById('sheetEyesHairInput').value = sData.eyesHair || 'Brown / Hazel';
 
   document.getElementById('sheetCurrentHp').value = sData.currentHp !== undefined ? sData.currentHp : (currentChar.hp || 12);
@@ -584,13 +604,13 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
           <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
             <span class="badge bg-label-primary font-monospace py-1 px-2 flex-shrink-0">Ekstra Trait</span>
-            <div class="flex-grow-1 min-w-0">
+            <div class="trait-filled-block flex-grow-1 min-w-0">
               <div class="d-flex align-items-center gap-1 flex-wrap">
                 <span class="fw-bold text-heading small text-truncate">${escapeHtml(cName)}</span>
                 ${cCat ? `<span class="badge bg-label-secondary font-monospace py-0 px-1 text-xs" style="font-size:0.65rem;">${escapeHtml(cCat)}</span>` : ''}
                 ${cUrl ? `<a href="${escapeHtml(cUrl)}" target="_blank" class="text-body-secondary text-hover-primary small" title="View source"><i class="icon-base ti tabler-external-link" style="font-size:0.8rem;"></i></a>` : ''}
               </div>
-              <small class="text-body-secondary d-block text-truncate" style="font-size: 0.68rem;">${escapeHtml(cDesc || '—')}</small>
+              <small class="text-body-secondary d-block trait-description">${escapeHtml(cDesc || '—')}</small>
             </div>
           </div>
           <div class="d-flex align-items-center gap-1 flex-shrink-0">
@@ -990,24 +1010,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const intScore = parseInt(document.getElementById('score_int')?.value, 10) || 10;
       defaultAmmo = `${Math.max(1, curLvl + calcMod(intScore))}/day`;
     } else if (idx === 1) {
-      defaultName = 'Longsword +1';
+      defaultName = 'Longsword';
       defaultAtkType = 'melee';
       defaultType = 'Slashing';
       defaultRange = '—';
       defaultBaseDie = '1d8';
-      defaultEnh = 1;
-      defaultCritRange = '19-20';
-      defaultCritMult = 2;
-    } else if (idx === 2 && !isAlchemist) {
-      defaultName = 'Heavy Crossbow';
-      defaultAtkType = 'ranged';
-      defaultType = 'Piercing';
-      defaultRange = '80 ft.';
-      defaultBaseDie = '1d10';
       defaultEnh = 0;
       defaultCritRange = '19-20';
       defaultCritMult = 2;
-      defaultAmmo = '30 bolts';
     }
 
     const name = w.name !== undefined ? w.name : defaultName;
@@ -1017,6 +1027,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const baseDie = w.baseDie || defaultBaseDie;
     const enh = w.enh !== undefined ? w.enh : defaultEnh;
     const miscAtk = w.miscAtk !== undefined ? w.miscAtk : 0;
+    const miscDmg = w.miscDmg !== undefined ? w.miscDmg : 0;
     const critRange = w.critRange || defaultCritRange;
     const critMult = w.critMult !== undefined ? w.critMult : defaultCritMult;
     const ammo = w.ammo !== undefined ? w.ammo : defaultAmmo;
@@ -1060,6 +1071,10 @@ document.addEventListener('DOMContentLoaded', function () {
           <div class="col-3 col-md-1 mt-1">
             <label class="form-label small text-body-secondary fw-semibold mb-0 text-truncate" style="font-size: 0.68rem;">Misc Atk</label>
             <input type="number" class="form-control form-control-sm pf-box-input font-monospace wp-misc-atk text-center px-1" value="${miscAtk}" />
+          </div>
+          <div class="col-3 col-md-1 mt-1">
+            <label class="form-label small text-body-secondary fw-semibold mb-0 text-truncate" style="font-size: 0.68rem;">Misc Dmg</label>
+            <input type="number" class="form-control form-control-sm pf-box-input font-monospace wp-misc-dmg text-center px-1" value="${miscDmg}" />
           </div>
           <div class="col-6 col-md-4 mt-1">
             <label class="form-label small text-body-secondary fw-semibold mb-0 d-flex align-items-center justify-content-between text-truncate" style="font-size: 0.68rem;">
@@ -1956,6 +1971,10 @@ document.addEventListener('DOMContentLoaded', function () {
     container.appendChild(div);
   }
 
+  function isOmduraClassSpecial(title) {
+    return /^(?:improved )?invocations?\b|^(?:destruction|healing|justice|piercing|protection|purify|resiliency|resistance|smiting)\s*:|^(?:divine might|divine touch|divine infusion|divine weapon)\b|^smite\b|^mercy(?:\b|\s*\()|^commune\b|^aura & detect alignment\b/i.test((title || '').trim());
+  }
+
   function populateSpecialsFromData(specials) {
     const container = document.getElementById('specialsContainer');
     if (!container) return;
@@ -1968,7 +1987,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const isOldDummyPaladinData = Array.isArray(specials) && specials.length > 0 && classKey !== 'paladin' &&
       specials.every(s => (s.title || '').includes('Smite Evil') || (s.title || '').includes('Aura of Good'));
 
-    if (!listToRender || !Array.isArray(listToRender) || listToRender.length === 0 || isOldDummyPaladinData) {
+    if (classKey === 'omdura') {
+      const customSpecials = Array.isArray(specials)
+        ? specials.filter(s => !isOmduraClassSpecial(s.title))
+        : [];
+      listToRender = [...getClassSpecialsList(classKey, level), ...customSpecials];
+    } else if (!listToRender || !Array.isArray(listToRender) || listToRender.length === 0 || isOldDummyPaladinData) {
       listToRender = getClassSpecialsList(classKey, level);
     } else {
       listToRender = filterScalingSpecials(listToRender);
@@ -1986,6 +2010,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const badge = div.querySelector('.badge')?.textContent.trim() || '';
       const title = div.querySelector('strong')?.textContent.trim() || '';
       const desc = div.querySelector('small')?.textContent.trim() || '';
+      if (isOmduraClassSpecial(title)) return;
       if (badge === 'Special' || (!badge.startsWith('Lvl ') && !badge.startsWith('Class'))) {
         if (title) customSpecials.push({ badge, title, desc });
       }
@@ -2034,6 +2059,18 @@ document.addEventListener('DOMContentLoaded', function () {
           if (usedInp && slot.used !== undefined) usedInp.value = slot.used;
         }
       });
+    }
+  }
+
+  if (sData.weapons && Array.isArray(sData.weapons)) {
+    sData.weapons.forEach(w => {
+      if (w && w.name === 'Longsword +1') {
+        w.name = 'Longsword';
+        if (w.enh === 1) w.enh = 0;
+      }
+    });
+    if (sData.weapons.length > 1 && sData.weapons.some(w => w.name === 'Longsword')) {
+      sData.weapons = sData.weapons.filter(w => !(w.name === 'Heavy Crossbow' && (w.ammo === '30 bolts' || !w.ammo)));
     }
   }
 
@@ -2883,6 +2920,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function getCastingStatForClass(classKey) {
     if (!classKey) return 'none';
     classKey = classKey.toLowerCase();
+    if (classKey === 'omdura') return 'cha';
     const prog = pfData.progressions[classKey];
     if (prog && prog.casting_stat) return prog.casting_stat;
     if (CLASS_CASTING_STATS[classKey]) return CLASS_CASTING_STATS[classKey];
@@ -2984,6 +3022,22 @@ document.addEventListener('DOMContentLoaded', function () {
             isLevelAccessible = true;
           }
         }
+      }
+
+      const importedLevel = currentChar.sheetData?.spells?.levels?.[String(lvl)];
+      const hasImportedLevel = importedLevel && (
+        (Array.isArray(importedLevel.spells) && importedLevel.spells.length > 0) ||
+        importedLevel.per_day !== undefined ||
+        importedLevel.known !== undefined
+      );
+      if (!isLevelAccessible && hasImportedLevel) {
+        const currentSlots = perDayInp?.value;
+        const importedSlots = parseInt(importedLevel.per_day, 10);
+        const currentSlotsValue = parseInt(currentSlots, 10);
+        const useImportedSlots = !currentSlots || currentSlots === '—' ||
+          (currentSlotsValue === 0 && importedSlots > 0);
+        slotsVal = useImportedSlots ? (importedLevel.per_day ?? '—') : currentSlots;
+        isLevelAccessible = true;
       }
 
       if (isLevelAccessible) {
@@ -3323,7 +3377,7 @@ document.addEventListener('DOMContentLoaded', function () {
       };
     });
 
-    document.querySelectorAll('.wp-name, .wp-atk-type, .wp-base-die, .wp-enh, .wp-misc-atk, .wp-crit-range, .wp-crit-mult, .wp-ammo').forEach(inp => {
+    document.querySelectorAll('.wp-name, .wp-atk-type, .wp-base-die, .wp-enh, .wp-misc-atk, .wp-misc-dmg, .wp-crit-range, .wp-crit-mult, .wp-ammo').forEach(inp => {
       const evtType = (inp.tagName === 'SELECT' || inp.type === 'checkbox') ? 'change' : 'input';
       inp.addEventListener(evtType, () => {
         recalculateAll();
@@ -3375,6 +3429,17 @@ document.addEventListener('DOMContentLoaded', function () {
     return false;
   }
 
+  function hasWeaponFeat(featName, weaponName) {
+    const normalizedWeapon = (weaponName || '').toLowerCase().trim();
+    if (!normalizedWeapon) return false;
+    return getCharacterFeats().some(feat => {
+      const normalizedFeat = feat.toLowerCase().trim();
+      if (!normalizedFeat.startsWith(featName)) return false;
+      const target = normalizedFeat.match(/\(([^)]+)\)/)?.[1]?.trim();
+      return !target || normalizedWeapon.includes(target) || target.includes(normalizedWeapon);
+    });
+  }
+
   function recalculateWeapons(mods, mainBab) {
     document.querySelectorAll('.weapon-row').forEach(row => {
       const wpName = row.querySelector('.wp-name')?.value || '';
@@ -3382,6 +3447,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const baseDie = row.querySelector('.wp-base-die')?.value || '1d8';
       const enh = parseInt(row.querySelector('.wp-enh')?.value, 10) || 0;
       const miscAtk = parseInt(row.querySelector('.wp-misc-atk')?.value, 10) || 0;
+      const miscDmg = parseInt(row.querySelector('.wp-misc-dmg')?.value, 10) || 0;
       const critRangeStr = row.querySelector('.wp-crit-range')?.value || '20';
       const critMult = parseInt(row.querySelector('.wp-crit-mult')?.value, 10) || 2;
 
@@ -3391,9 +3457,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const isBomb = wpName.toLowerCase().includes('bomb') || wpName.toLowerCase().includes('bomba');
 
       const abilityMod = (atkType === 'ranged' || isBomb) ? (mods.dex || 0) : (mods.str || 0);
-      const atkTotal = mainBab + abilityMod + enh + miscAtk;
+      const focusBonus = hasWeaponFeat('weapon focus', wpName) ? 1 : 0;
+      const specializationBonus = hasWeaponFeat('weapon specialization', wpName) ? 2 : 0;
+      const atkTotal = mainBab + abilityMod + enh + miscAtk + focusBonus;
       const atkTotalEl = row.querySelector('.wp-atk-total');
-      if (atkTotalEl) atkTotalEl.textContent = formatMod(atkTotal);
+      if (atkTotalEl) {
+        const iterativeCount = Math.max(1, Math.floor((mainBab - 1) / 5) + 1);
+        atkTotalEl.textContent = Array.from({ length: iterativeCount }, (_, index) => formatMod(atkTotal - index * 5)).join('/');
+      }
 
       const atkFormulaEl = row.querySelector('.wp-atk-formula');
       const abLabel = (atkType === 'ranged' || isBomb) ? 'DEX' : 'STR';
@@ -3401,11 +3472,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isBomb) {
           atkFormulaEl.textContent = `${formatMod(mainBab)}(BAB) ${formatMod(abilityMod)}(DEX Touch) ${enh ? formatMod(enh)+'(Enh)' : ''} ${miscAtk ? formatMod(miscAtk)+'(Misc)' : ''}`.replace(/\s+/g, ' ').trim();
         } else {
-          atkFormulaEl.textContent = `${formatMod(mainBab)}(BAB) ${formatMod(abilityMod)}(${abLabel}) ${enh ? formatMod(enh)+'(Enh)' : ''} ${miscAtk ? formatMod(miscAtk)+'(Misc)' : ''}`.replace(/\s+/g, ' ').trim();
+          atkFormulaEl.textContent = `${formatMod(mainBab)}(BAB) ${formatMod(abilityMod)}(${abLabel}) ${focusBonus ? '+1(Weapon Focus)' : ''} ${enh ? formatMod(enh)+'(Enh)' : ''} ${miscAtk ? formatMod(miscAtk)+'(Misc)' : ''}`.replace(/\s+/g, ' ').trim();
         }
       }
 
-      const dmgMod = isBomb ? ((mods.int || 0) + enh) : (atkType === 'melee' ? ((mods.str || 0) + enh) : enh);
+      const dmgMod = isBomb
+        ? (mods.int || 0) + enh + miscDmg
+        : (atkType === 'melee' ? (mods.str || 0) + enh : enh) + miscDmg + specializationBonus;
       const dmgTotalEl = row.querySelector('.wp-dmg-total');
       if (dmgTotalEl) {
         dmgTotalEl.textContent = dmgMod !== 0 ? `${baseDie}${formatMod(dmgMod)}` : baseDie;
@@ -3416,9 +3489,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isBomb) {
           dmgFormulaEl.textContent = `${baseDie} ${formatMod(mods.int || 0)}(INT) ${enh ? formatMod(enh)+'(Enh)' : ''} [Fire/Splash]`.replace(/\s+/g, ' ').trim();
         } else if (atkType === 'melee') {
-          dmgFormulaEl.textContent = `${baseDie} ${formatMod(mods.str || 0)}(STR) ${enh ? formatMod(enh)+'(Enh)' : ''}`.replace(/\s+/g, ' ').trim();
+          dmgFormulaEl.textContent = `${baseDie} ${formatMod(mods.str || 0)}(STR) ${specializationBonus ? formatMod(specializationBonus)+'(Weapon Specialization)' : ''} ${enh ? formatMod(enh)+'(Enh)' : ''} ${miscDmg ? formatMod(miscDmg)+'(Misc)' : ''}`.replace(/\s+/g, ' ').trim();
         } else {
-          dmgFormulaEl.textContent = `${baseDie} ${enh ? formatMod(enh)+'(Enh)' : 'no STR'}`.replace(/\s+/g, ' ').trim();
+          dmgFormulaEl.textContent = `${baseDie} ${enh ? formatMod(enh)+'(Enh)' : 'no STR'} ${miscDmg ? formatMod(miscDmg)+'(Misc)' : ''} ${specializationBonus ? formatMod(specializationBonus)+'(Weapon Specialization)' : ''}`.replace(/\s+/g, ' ').trim();
         }
       }
 
@@ -3534,7 +3607,7 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteCookie('pf_active_char_id');
       deleteCookie('pf_active_char_name');
       deleteCookie('pf_sheet_draft');
-      window.location.href = window.location.pathname;
+      window.location.href = window.location.pathname + '?new=1';
     });
   }
 
@@ -3544,7 +3617,7 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteCookie('pf_active_char_id');
       deleteCookie('pf_active_char_name');
       deleteCookie('pf_sheet_draft');
-      window.location.href = window.location.pathname;
+      window.location.href = window.location.pathname + '?new=1';
     });
   }
 
@@ -4141,6 +4214,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const classKey = document.getElementById('sheetClassSelect')?.value || 'paladin';
     const level = parseInt(document.getElementById('sheetLevelInput')?.value, 10) || 1;
     const race = document.getElementById('sheetRaceInput')?.value || 'Human';
+    const eyesHair = document.getElementById('sheetEyesHairInput')?.value || '';
+    const [hair = '', eyes = ''] = eyesHair.split('/').map(value => value.trim());
+    const sheetData = currentChar?.sheetData || {};
+    const gear = (sheetData.gear || []).map(item => typeof item === 'string' ? item : item.name).filter(Boolean);
+    const feats = (sheetData.feats || []).map(feat => typeof feat === 'string' ? feat : feat.title).filter(Boolean);
 
     let classString = currentChar?.className || classKey;
     if (multiclassState && multiclassState.length > 0) {
@@ -4156,7 +4234,7 @@ document.addEventListener('DOMContentLoaded', function () {
           ranks: skVal.ranks || 0,
           misc: skVal.misc || 0,
           total: skVal.total || 0,
-          cs: !!skVal.cs
+          cs: !!(skVal.cs || skVal.isClassSkill)
         };
       }
     }
@@ -4169,6 +4247,16 @@ document.addEventListener('DOMContentLoaded', function () {
         'in-class': classString,
         'in-level': level,
         'in-race': race,
+        'in-size': document.getElementById('sheetSizeSelect')?.value || 'Medium',
+        'in-deity': document.getElementById('sheetDeityInput')?.value || '',
+        'in-homeland': document.getElementById('sheetHomelandInput')?.value || '',
+        'in-gender': document.getElementById('sheetGenderInput')?.value || '',
+        'in-age': document.getElementById('sheetAgeInput')?.value || '',
+        'in-height': document.getElementById('sheetHeightInput')?.value || '',
+        'in-weight': document.getElementById('sheetWeightInput')?.value || '',
+        'in-hair': sheetData.hair || hair,
+        'in-eyes': sheetData.eyes || eyes,
+        'in-xp': sheetData.currentXp || '',
         'in-str': parseInt(document.getElementById('score_str')?.value, 10) || 10,
         'in-dex': parseInt(document.getElementById('score_dex')?.value, 10) || 10,
         'in-con': parseInt(document.getElementById('score_con')?.value, 10) || 10,
@@ -4184,8 +4272,17 @@ document.addEventListener('DOMContentLoaded', function () {
         'in-will': parseInt(document.getElementById('saveTotal_will')?.textContent, 10) || 0,
         'in-cmb': parseInt(document.getElementById('sheetCmbTotal')?.textContent, 10) || 0,
         'in-cmd': parseInt(document.getElementById('sheetCmdTotal')?.textContent, 10) || 10,
-        'in-gear': (currentChar?.sheetData?.gear || []).map(g => `${g.name} (${g.weight} lbs)`).join('\n'),
-        'in-feats': (currentChar?.sheetData?.feats || []).map(f => f.title).join(', '),
+        'in-speed-armor': parseInt(document.getElementById('sheetSpeedArmor')?.value, 10) || '',
+        'in-init': parseInt(document.getElementById('sheetInitTotal')?.textContent, 10) || 0,
+        'in-init-extra': parseInt(document.getElementById('sheetInitMisc')?.value, 10) || 0,
+        'in-dr': document.getElementById('sheetDrInput')?.value || '',
+        'in-sr': document.getElementById('sheetSrInput')?.value || '',
+        'in-gp': document.getElementById('sheetMoneyGp')?.value || '',
+        'in-sp': document.getElementById('sheetMoneySp')?.value || '',
+        'in-cp': document.getElementById('sheetMoneyCp')?.value || '',
+        'in-pp': document.getElementById('sheetMoneyPp')?.value || '',
+        'in-gear': gear.join('\n'),
+        'in-feats': feats.join(', '),
         'in-sq': [
           ...((currentChar?.sheetData?.traits ? Object.entries(currentChar.sheetData.traits).filter(([k, v]) => k !== 'custom' && v && v.name).map(([_, v]) => `Trait: ${v.name}${v.desc ? ' (' + v.desc + ')' : ''}`) : [])),
           ...((currentChar?.sheetData?.traits?.custom && Array.isArray(currentChar.sheetData.traits.custom)) ? currentChar.sheetData.traits.custom.filter(t => t && t.name).map(t => `Trait: ${t.name}${t.desc ? ' (' + t.desc + ')' : ''}`) : []),
@@ -4201,6 +4298,9 @@ document.addEventListener('DOMContentLoaded', function () {
         weapons: currentChar?.sheetData?.weapons || [],
         armors: currentChar?.sheetData?.acItems || [],
         ac_items: currentChar?.sheetData?.acItems || [],
+        gear: currentChar?.sheetData?.gear || [],
+        feats: currentChar?.sheetData?.feats || [],
+        save_items: currentChar?.sheetData?.saveItems || [],
         skills: skillsObj
       }
     };
@@ -4416,23 +4516,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function populateSheetFromData(data) {
     if (!data) return;
-    const sData = data.sheetData || data;
+    const loadedSheetData = data.sheetData || data;
     const basic = data.basic || {};
 
-    const rawCharName = data.name || basic['in-name'] || sData.name || '';
+    const rawCharName = data.name || basic['in-name'] || loadedSheetData.name || '';
     const charName = rawCharName !== 'Valiant Adventurer' ? rawCharName : '';
+    sData = loadedSheetData;
+    currentChar = { ...currentChar, ...data, name: charName, sheetData: loadedSheetData };
     const nameEl = document.getElementById('sheetCharName');
     if (nameEl) nameEl.value = charName;
     const topName = document.getElementById('header-character-name');
     if (topName) topName.textContent = charName;
 
-    const lvl = data.level || basic['in-level'] || sData.level || 1;
+    const lvl = data.level || basic['in-level'] || loadedSheetData.level || 1;
     const lvlEl = document.getElementById('sheetLevelInput');
     if (lvlEl) lvlEl.value = lvl;
     const lvlCounter = document.getElementById('sheetLvlCounter');
     if (lvlCounter) lvlCounter.textContent = lvl;
 
     const classKey = data.classKey || (data.class ? String(data.class).toLowerCase() : null) || 'paladin';
+    currentChar.classKey = classKey;
+    currentChar.className = data.className || data.class || classKey;
+    currentChar.level = parseInt(lvl, 10) || 1;
+    currentChar.race = data.race || basic['in-race'] || 'Human';
     const classEl = document.getElementById('sheetClassSelect');
     if (classEl) {
       classEl.value = classKey;
@@ -4463,15 +4569,19 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sData.alignment || basic['in-alignment']) document.getElementById('sheetAlignmentSelect').value = normalizeAlignment(sData.alignment || basic['in-alignment']);
     const rawPlayer = sData.player || basic['in-player'] || '';
     document.getElementById('sheetPlayerName').value = rawPlayer !== 'Valiant Adventurer' ? rawPlayer : '';
-    document.getElementById('sheetDeityInput').value = '';
-    document.getElementById('sheetHomelandInput').value = '';
+    document.getElementById('sheetDeityInput').value = sData.deity || basic['in-deity'] || '';
+    document.getElementById('sheetHomelandInput').value = sData.homeland || basic['in-homeland'] || '';
     if (sData.size) document.getElementById('sheetSizeSelect').value = sData.size;
     const resolvedGender = (sData.gender === 'Female') ? 'Female' : 'Male';
     document.getElementById('sheetGenderInput').value = resolvedGender;
     setCookie('pf_active_gender', resolvedGender, 30);
     if (sData.age) document.getElementById('sheetAgeInput').value = sData.age;
     if (sData.height) document.getElementById('sheetHeightInput').value = sData.height;
-    if (sData.eyesHair) document.getElementById('sheetEyesHairInput').value = sData.eyesHair;
+    if (sData.weight || basic['in-weight']) document.getElementById('sheetWeightInput').value = sData.weight || basic['in-weight'];
+    if (sData.eyesHair || sData.hair || sData.eyes || basic['in-hair'] || basic['in-eyes']) {
+      document.getElementById('sheetEyesHairInput').value = sData.eyesHair ||
+        [sData.hair || basic['in-hair'], sData.eyes || basic['in-eyes']].filter(Boolean).join(' / ');
+    }
     if (sData.race || basic['in-race']) document.getElementById('sheetRaceInput').value = sData.race || basic['in-race'];
 
     const ab = sData.abilityScores || {
@@ -4504,6 +4614,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sData.spells) populateSpellsFromData(sData.spells);
     populateTraitsFromData(sData.traits);
 
+    renderSkillsTable();
     onClassOrLevelChange();
   }
 
@@ -4517,7 +4628,10 @@ document.addEventListener('DOMContentLoaded', function () {
       gender: document.getElementById('sheetGenderInput').value,
       age: document.getElementById('sheetAgeInput').value,
       height: document.getElementById('sheetHeightInput').value,
+      weight: document.getElementById('sheetWeightInput').value,
       eyesHair: document.getElementById('sheetEyesHairInput').value,
+      hair: document.getElementById('sheetEyesHairInput').value.split('/')[0]?.trim() || '',
+      eyes: document.getElementById('sheetEyesHairInput').value.split('/')[1]?.trim() || '',
       currentHp: parseInt(document.getElementById('sheetCurrentHp').value, 10) || 12,
       maxHp: parseInt(document.getElementById('sheetMaxHp').value, 10) || 12,
       hitDie: document.getElementById('sheetHitDie').value || 'd10',
@@ -4565,6 +4679,9 @@ document.addEventListener('DOMContentLoaded', function () {
       spells: {
         castingStat: document.getElementById('sheetCastingStat')?.value || 'cha',
         spellNotes: document.getElementById('sheetSpellNotes')?.value || '',
+        castingClass: sData.spells?.castingClass || '',
+        cl: sData.spells?.cl || 0,
+        levels: { ...(sData.spells?.levels || {}) },
         slots: []
       },
       hpRolls: sData.hpRolls || {},
@@ -4621,6 +4738,7 @@ document.addEventListener('DOMContentLoaded', function () {
         baseDie: row.querySelector('.wp-base-die')?.value || '1d8',
         enh: parseInt(row.querySelector('.wp-enh')?.value, 10) || 0,
         miscAtk: parseInt(row.querySelector('.wp-misc-atk')?.value, 10) || 0,
+        miscDmg: parseInt(row.querySelector('.wp-misc-dmg')?.value, 10) || 0,
         critRange: row.querySelector('.wp-crit-range')?.value || '20',
         critMult: parseInt(row.querySelector('.wp-crit-mult')?.value, 10) || 2,
         ammo: row.querySelector('.wp-ammo')?.value || '',
@@ -4698,9 +4816,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#paneSpells table tbody tr, #tab-page2 table tbody tr').forEach((tr, lvl) => {
       const knownEl = tr.querySelector('.spell-known, .spell-known-val');
       const known = parseInt(knownEl?.value || knownEl?.textContent, 10) || 0;
-      const perDay = parseInt(tr.querySelector('.spell-per-day')?.value, 10) || 0;
+      const perDayInput = tr.querySelector('.spell-per-day');
+      const perDay = parseInt(perDayInput?.value, 10) || 0;
       const used = parseInt(tr.querySelector('.spell-used')?.value, 10) || 0;
       sheetData.spells.slots.push({ lvl, known, perDay, used });
+      if (perDayInput && !perDayInput.disabled && perDayInput.value && perDayInput.value !== '—') {
+        sheetData.spells.levels[String(lvl)] = {
+          ...(sheetData.spells.levels[String(lvl)] || {}),
+          per_day: perDayInput.value
+        };
+      }
     });
 
     currentChar.name = document.getElementById('sheetCharName').value.trim() || '';
@@ -4832,7 +4957,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  ['sheetPlayerName', 'sheetDeityInput', 'sheetHomelandInput', 'sheetGenderInput', 'sheetAlignmentSelect', 'sheetAgeInput', 'sheetHeightInput', 'sheetEyesHairInput'].forEach(id => {
+  ['sheetPlayerName', 'sheetDeityInput', 'sheetHomelandInput', 'sheetGenderInput', 'sheetAlignmentSelect', 'sheetAgeInput', 'sheetHeightInput', 'sheetWeightInput', 'sheetEyesHairInput'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('input', () => triggerAutoSave());
@@ -4858,5 +4983,21 @@ document.addEventListener('DOMContentLoaded', function () {
   initMulticlassModal();
   setupTraitEvents();
   onClassOrLevelChange();
+
+  if (shouldLoadExample) {
+    fetch('/api/load-character?file=Caspian_Blade.json')
+      .then(response => {
+        if (!response.ok) throw new Error(`Example character could not be loaded (${response.status})`);
+        return response.json();
+      })
+      .then(data => {
+        populateSheetFromData(data);
+        showToast('Caspian Blade example loaded. Edit and save your own copy.', 'success');
+      })
+      .catch(error => {
+        console.error('Example character load failed:', error);
+        showToast('Example character load failed: ' + error.message, 'danger');
+      });
+  }
 
 });

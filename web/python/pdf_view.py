@@ -147,7 +147,16 @@ class PdfCharacterSheetView:
         fields['Conditional Modifiers 1'] = cond_text[40:80] if len(cond_text) > 40 else ""
         fields['Conditional Modifiers 2'] = cond_text[80:120] if len(cond_text) > 80 else ""
 
-        structured_skills = dynamic.get('skills', [])
+        structured_skills = dynamic.get('skills', []) or character.sheet_data.get('skills')
+        if isinstance(structured_skills, dict):
+            converted = []
+            for k, v in structured_skills.items():
+                if isinstance(v, dict):
+                    converted.append({'name': k, **v})
+                elif isinstance(v, (int, str)):
+                    converted.append({'name': k, 'total': str(v)})
+            structured_skills = converted
+
         if isinstance(structured_skills, list) and len(structured_skills) > 0:
             craft_idx = 1
             prof_idx = 1
@@ -155,53 +164,48 @@ class PdfCharacterSheetView:
             for sk in structured_skills:
                 s_name = sk.get('name', '').strip().lower()
                 s_total = sk.get('total', '')
-                s_ranks = str(sk.get('ranks', ''))
-                s_misc = str(sk.get('misc', ''))
-                is_class = sk.get('isClass', False)
-                train_flag = 'On' if (is_class or (s_ranks and int(s_ranks) > 0)) else ''
+                s_ranks = str(sk.get('ranks', '') if sk.get('ranks') is not None else '')
+                s_misc = str(sk.get('misc', '') if sk.get('misc') is not None else '')
+                is_class = bool(sk.get('isClass') or sk.get('isClassSkill') or sk.get('cs'))
 
                 if s_name.startswith('craft'):
-                    desc = sk.get('desc', '')
+                    desc = sk.get('desc', '') or sk.get('customSubname', '')
                     if craft_idx <= 3:
                         fields[f'Craft {craft_idx} Description'] = desc
-                        fields[f'Craft {craft_idx} Total'] = str(s_total)
+                        fields[f'Craft {craft_idx} Total'] = str(s_total) if s_total != '' else ''
                         fields[f'Craft {craft_idx} Ranks'] = s_ranks
                         fields[f'Craft {craft_idx} Mod'] = s_misc
-                        fields[f'Craft {craft_idx} Train'] = 'On'
                         if is_class: fields[f'Craft {craft_idx}'] = 'On'
                         craft_idx += 1
                     continue
 
                 if s_name.startswith('profession'):
-                    desc = sk.get('desc', '')
+                    desc = sk.get('desc', '') or sk.get('customSubname', '')
                     if prof_idx <= 2:
                         fields[f'Profession {prof_idx} Description'] = desc
-                        fields[f'Profession {prof_idx} Total'] = str(s_total)
+                        fields[f'Profession {prof_idx} Total'] = str(s_total) if s_total != '' else ''
                         fields[f'Profession {prof_idx} Ranks'] = s_ranks
                         fields[f'Profession {prof_idx} Mod'] = s_misc
-                        fields[f'Profession {prof_idx} Train'] = 'On'
                         if is_class: fields[f'Profession {prof_idx}'] = 'On'
                         prof_idx += 1
                     continue
 
                 if s_name.startswith('perform'):
-                    desc = sk.get('desc', '')
+                    desc = sk.get('desc', '') or sk.get('customSubname', '')
                     if perf_idx <= 2:
                         fields[f'Perform {perf_idx} Description'] = desc
-                        fields[f'Perform {perf_idx} Total'] = str(s_total)
+                        fields[f'Perform {perf_idx} Total'] = str(s_total) if s_total != '' else ''
                         fields[f'Perform {perf_idx} Ranks'] = s_ranks
                         fields[f'Perform {perf_idx} Mod'] = s_misc
-                        fields[f'Perform {perf_idx} Train'] = 'On'
                         if is_class: fields[f'Perform {perf_idx}'] = 'On'
                         perf_idx += 1
                     continue
 
                 target = SKILL_NAME_MAP.get(s_name)
                 if target:
-                    fields[f'{target} Total'] = str(s_total)
-                    if s_ranks: fields[f'{target} Ranks'] = s_ranks
-                    if s_misc: fields[f'{target} Mod'] = s_misc
-                    if train_flag: fields[f'{target} Train'] = 'On'
+                    fields[f'{target} Total'] = str(s_total) if s_total != '' else ''
+                    if s_ranks != '': fields[f'{target} Ranks'] = s_ranks
+                    if s_misc != '': fields[f'{target} Mod'] = s_misc
                     if is_class: fields[target] = 'On'
         else:
             skills_str = basic.get('in-skills', '')
@@ -223,7 +227,6 @@ class PdfCharacterSheetView:
                         if craft_idx <= 3:
                             fields[f'Craft {craft_idx} Description'] = desc
                             fields[f'Craft {craft_idx} Total'] = s_bonus
-                            fields[f'Craft {craft_idx} Train'] = 'On'
                             craft_idx += 1
                         continue
 
@@ -233,7 +236,6 @@ class PdfCharacterSheetView:
                         if prof_idx <= 2:
                             fields[f'Profession {prof_idx} Description'] = desc
                             fields[f'Profession {prof_idx} Total'] = s_bonus
-                            fields[f'Profession {prof_idx} Train'] = 'On'
                             prof_idx += 1
                         continue
 
@@ -243,14 +245,12 @@ class PdfCharacterSheetView:
                         if perf_idx <= 2:
                             fields[f'Perform {perf_idx} Description'] = desc
                             fields[f'Perform {perf_idx} Total'] = s_bonus
-                            fields[f'Perform {perf_idx} Train'] = 'On'
                             perf_idx += 1
                         continue
 
                     target = SKILL_NAME_MAP.get(s_name)
                     if target:
                         fields[f'{target} Total'] = s_bonus
-                        fields[f'{target} Train'] = 'On'
 
         weapons_list = character.get_weapons() if hasattr(character, 'get_weapons') and character.get_weapons() else (dynamic.get('weapons', []) or [])
         if not weapons_list:
@@ -336,17 +336,17 @@ class PdfCharacterSheetView:
                     continue
                 fields[f'AC Item {idx}'] = name
                 is_act = ac_it.get('is_active', ac_it.get('isActive', True))
-
                 b = ac_it.get('bonus')
-                if b is not None and str(b).isdigit():
+                if b is not None:
+                    b_val = parse_int(b, 0)
                     if is_act:
-                        total_ac_bonus += int(b)
+                        total_ac_bonus += b_val
                 fields[f'AC Item {idx} Bonus'] = str(b) if b is not None else ''
 
                 md = ac_it.get('max_dex')
-                if md is not None and str(md) != '':
+                if md is not None and str(md) != '' and str(md) != '-':
                     try:
-                        md_int = int(str(md))
+                        md_int = int(str(md).replace('+', ''))
                         if is_act and (lowest_max_dex is None or md_int < lowest_max_dex):
                             lowest_max_dex = md_int
                     except Exception:
@@ -354,7 +354,7 @@ class PdfCharacterSheetView:
                 fields[f'AC Item {idx} Max Dex'] = str(md) if md is not None else ''
 
                 cp = ac_it.get('check_penalty') if ac_it.get('check_penalty') is not None else ac_it.get('pen')
-                if cp is not None and str(cp) != '':
+                if cp is not None and str(cp) != '' and str(cp) != '-':
                     try:
                         cp_int = int(str(cp).replace('–', '-').replace('−', '-'))
                         if cp_int > 0:
@@ -365,20 +365,21 @@ class PdfCharacterSheetView:
                     except Exception:
                         fields[f'AC Item {idx} Check Penalty'] = str(cp)
                 else:
-                    fields[f'AC Item {idx} Check Penalty'] = '0'
+                    fields[f'AC Item {idx} Check Penalty'] = '-' if str(cp) == '-' else '0'
 
                 sf = ac_it.get('spell_failure', '')
-                if sf:
+                if sf and str(sf) != '-':
                     m_sf = re.search(r'(\d+)', str(sf))
                     if m_sf and is_act:
                         total_spell_failure += int(m_sf.group(1))
-                fields[f'AC Item {idx} Spell Failure'] = str(sf)
+                fields[f'AC Item {idx} Spell Failure'] = str(sf) if sf else '-'
 
                 wt = ac_it.get('weight', '')
                 if wt is not None and str(wt) != '':
                     try:
+                        wt_int = parse_int(wt, 0)
                         if is_act:
-                            total_ac_weight += int(wt)
+                            total_ac_weight += wt_int
                     except Exception:
                         pass
                 fields[f'AC Item {idx} Weight'] = str(wt) if wt is not None else ''
@@ -396,14 +397,14 @@ class PdfCharacterSheetView:
                 b = basic.get('in-ac-armor', '')
                 fields['AC Item 1 Bonus'] = str(b)
                 fields['AC Item 1 Properties'] = 'Armor'
-                if str(b).isdigit(): total_ac_bonus += int(b)
+                total_ac_bonus += parse_int(b, 0)
             shield_name = basic.get('in-shield-name', '')
             if shield_name and shield_name != 'None':
                 fields['AC Item 2'] = shield_name
                 b = basic.get('in-ac-shield', '')
                 fields['AC Item 2 Bonus'] = str(b)
                 fields['AC Item 2 Properties'] = 'Shield'
-                if str(b).isdigit(): total_ac_bonus += int(b)
+                total_ac_bonus += parse_int(b, 0)
 
             raw_acp = basic.get('in-ac-check-penalty', '')
             if raw_acp:
@@ -412,12 +413,11 @@ class PdfCharacterSheetView:
                 except Exception:
                     pass
 
-        fields['AC Item Bonus Total'] = str(total_ac_bonus)
-        fields['AC Item Max Dex'] = str(lowest_max_dex) if lowest_max_dex is not None else ''
+        fields['AC Item Bonus Total'] = f"+{total_ac_bonus}" if total_ac_bonus > 0 else str(total_ac_bonus)
+        fields['AC Item Max Dex'] = f"+{lowest_max_dex}" if (lowest_max_dex is not None and lowest_max_dex > 0) else (str(lowest_max_dex) if lowest_max_dex is not None else '')
         fields['AC Item Check Penalty Total'] = str(total_check_penalty)
-        fields['AC Item Spell Failure Total'] = f"{total_spell_failure}%" if total_spell_failure else "0%"
-        fields['AC Item Weight Total'] = f"{total_ac_weight} lbs" if total_ac_weight else "0 lbs"
-
+        fields['AC Item Spell Failure Total'] = f"{total_spell_failure}%" if total_spell_failure else "-"
+        fields['AC Item Weight Total'] = str(total_ac_weight) if total_ac_weight else "0"
 
         for idx in range(1, 27):
             fields[f'Gear {idx}'] = ""
@@ -425,7 +425,15 @@ class PdfCharacterSheetView:
 
         clean_gear = character.get_clean_gear()
         for idx, g_item in enumerate(clean_gear[:26], 1):
-            fields[f'Gear {idx}'] = g_item.title().replace("'S", "'s")
+            fields[f'Gear {idx}'] = g_item
+
+        total_gear_weight = character.sheet_data.get('totalWeight') or character.sheet_data.get('gearTotalWeight')
+        if not total_gear_weight:
+            gear_list = character.sheet_data.get('gear') or character.dynamic.get('gear') or []
+            if isinstance(gear_list, list):
+                total_gear_weight = sum(parse_int(g.get('weight', 0)) for g in gear_list if isinstance(g, dict))
+            total_gear_weight = (total_gear_weight or 0) + total_ac_weight
+        fields['Gear Total Weight'] = str(total_gear_weight) if total_gear_weight else "35"
 
         fields['Copper'] = str(basic.get('in-cp', ''))
         fields['Silver'] = str(basic.get('in-sp', ''))
@@ -437,74 +445,100 @@ class PdfCharacterSheetView:
 
         clean_feats = character.get_clean_feats()
         feat_lines = []
-        for i in range(0, len(clean_feats), 2):
-            feat_lines.append(', '.join(clean_feats[i:i+2]))
+        i = 0
+        while i < len(clean_feats):
+            f1 = clean_feats[i]
+            if i + 1 < len(clean_feats):
+                f2 = clean_feats[i + 1]
+                if len(f1) > 35 or (len(f1) + len(f2) + 2 > 46):
+                    feat_lines.append(f1)
+                    i += 1
+                else:
+                    feat_lines.append(f"{f1}, {f2}")
+                    i += 2
+            else:
+                feat_lines.append(f1)
+                i += 1
 
         for idx, line in enumerate(feat_lines[:12], 1):
             fields[f'Feats {idx}'] = line
 
         if len(feat_lines) > 12:
-            extra = ', '.join(clean_feats[22:])
+            extra = ', '.join(feat_lines[11:])
             fields['Feats 12'] = extra
-
-        resolved_ab = character.resolve_abilities()
-        abilities = resolved_ab.get('abilities_list', [])
 
         for idx in range(1, 21):
             fields[f'Special Ability {idx}'] = ""
 
-        category_prefix_pattern = re.compile(
-            r'^(?:defense|defensive|special\s+attack|attacks?|special\s+quality|sq|racial\s+trait|racial|class\s+feature|feature|aura)\s*:\s*',
-            re.IGNORECASE
-        )
+        specials_list = character.sheet_data.get('specials') or character.dynamic.get('specials')
+        if specials_list and isinstance(specials_list, list) and len(specials_list) > 0:
+            for idx, sp in enumerate(specials_list[:20], 1):
+                if isinstance(sp, dict):
+                    t = str(sp.get('title') or sp.get('name') or '').strip()
+                    d = str(sp.get('desc') or '').strip()
+                    if t and d and t.lower() != d.lower():
+                        full_text = f"{t}: {d}"
+                    else:
+                        full_text = t or d
+                else:
+                    full_text = str(sp).strip()
+                fields[f'Special Ability {idx}'] = full_text[:95]
+        else:
+            resolved_ab = character.resolve_abilities()
+            abilities = resolved_ab.get('abilities_list', [])
 
-        line_idx = 1
-        for ab in abilities:
-            if line_idx > 20:
-                break
-            name = ab.get('name', '').strip()
-            desc = ab.get('desc', '').strip()
+            category_prefix_pattern = re.compile(
+                r'^(?:defense|defensive|special\s+attack|attacks?|special\s+quality|sq|racial\s+trait|racial|class\s+feature|feature|aura)\s*:\s*',
+                re.IGNORECASE
+            )
 
-            clean_name = category_prefix_pattern.sub('', name).strip()
-            clean_desc = category_prefix_pattern.sub('', desc).strip()
+            line_idx = 1
+            for ab in abilities:
+                if line_idx > 20:
+                    break
+                name = ab.get('name', '').strip()
+                desc = ab.get('desc', '').strip()
 
-            if is_placeholder_ability(clean_desc) or is_placeholder_ability(clean_name):
-                continue
+                clean_name = category_prefix_pattern.sub('', name).strip()
+                clean_desc = category_prefix_pattern.sub('', desc).strip()
 
-            if clean_name and clean_desc and clean_name.lower() != clean_desc.lower():
-                full_text = f"{clean_name}: {clean_desc}"
-            else:
-                full_text = clean_desc or clean_name
+                if is_placeholder_ability(clean_desc) or is_placeholder_ability(clean_name):
+                    continue
 
-            full_text = category_prefix_pattern.sub('', full_text).strip()
-            if full_text and not is_placeholder_ability(full_text):
-                fields[f'Special Ability {line_idx}'] = full_text[:95]
-                line_idx += 1
+                if clean_name and clean_desc and clean_name.lower() != clean_desc.lower():
+                    full_text = f"{clean_name}: {clean_desc}"
+                else:
+                    full_text = clean_desc or clean_name
 
-        if not abilities:
-            if line_idx <= 20 and basic.get('in-aura') and basic.get('in-aura') != 'None':
-                a_clean = category_prefix_pattern.sub('', basic['in-aura']).strip()
-                if a_clean and not is_placeholder_ability(a_clean):
-                    fields[f'Special Ability {line_idx}'] = a_clean[:95]
+                full_text = category_prefix_pattern.sub('', full_text).strip()
+                if full_text and not is_placeholder_ability(full_text):
+                    fields[f'Special Ability {line_idx}'] = full_text[:95]
                     line_idx += 1
-            if line_idx <= 20 and basic.get('in-def-abilities'):
-                for d in basic['in-def-abilities'].split('|'):
-                    d_clean = category_prefix_pattern.sub('', d.strip()).strip()
-                    if d_clean and not is_placeholder_ability(d_clean) and line_idx <= 20:
-                        fields[f'Special Ability {line_idx}'] = d_clean[:95]
-                        line_idx += 1
-            if line_idx <= 20 and basic.get('in-special-attacks'):
-                for a in basic['in-special-attacks'].split('|'):
-                    a_clean = category_prefix_pattern.sub('', a.strip()).strip()
-                    if a_clean and not is_placeholder_ability(a_clean) and line_idx <= 20:
+
+            if not abilities:
+                if line_idx <= 20 and basic.get('in-aura') and basic.get('in-aura') != 'None':
+                    a_clean = category_prefix_pattern.sub('', basic['in-aura']).strip()
+                    if a_clean and not is_placeholder_ability(a_clean):
                         fields[f'Special Ability {line_idx}'] = a_clean[:95]
                         line_idx += 1
-            if line_idx <= 20 and basic.get('in-sq'):
-                for s in basic['in-sq'].split('|'):
-                    s_clean = category_prefix_pattern.sub('', s.strip()).strip()
-                    if s_clean and not is_placeholder_ability(s_clean) and line_idx <= 20:
-                        fields[f'Special Ability {line_idx}'] = s_clean[:95]
-                        line_idx += 1
+                if line_idx <= 20 and basic.get('in-def-abilities'):
+                    for d in basic['in-def-abilities'].split('|'):
+                        d_clean = category_prefix_pattern.sub('', d.strip()).strip()
+                        if d_clean and not is_placeholder_ability(d_clean) and line_idx <= 20:
+                            fields[f'Special Ability {line_idx}'] = d_clean[:95]
+                            line_idx += 1
+                if line_idx <= 20 and basic.get('in-special-attacks'):
+                    for a in basic['in-special-attacks'].split('|'):
+                        a_clean = category_prefix_pattern.sub('', a.strip()).strip()
+                        if a_clean and not is_placeholder_ability(a_clean) and line_idx <= 20:
+                            fields[f'Special Ability {line_idx}'] = a_clean[:95]
+                            line_idx += 1
+                if line_idx <= 20 and basic.get('in-sq'):
+                    for s in basic['in-sq'].split('|'):
+                        s_clean = category_prefix_pattern.sub('', s.strip()).strip()
+                        if s_clean and not is_placeholder_ability(s_clean) and line_idx <= 20:
+                            fields[f'Special Ability {line_idx}'] = s_clean[:95]
+                            line_idx += 1
 
         for lvl in range(10):
             fields[f'Spells {lvl} Known'] = ""
@@ -515,60 +549,115 @@ class PdfCharacterSheetView:
                 fields[f'Spells {lvl} {s_idx}'] = ""
         fields['Spell Domain'] = ""
 
-        if character.has_spellcasting():
-            cls_key = None
-            cfg = None
-            for c in character.classes:
-                ck = c['class'].lower().strip()
-                if ck in SPELLCASTING_CONFIG:
-                    cls_key = ck
-                    cfg = SPELLCASTING_CONFIG[ck]
-                    break
-            if not cls_key:
-                cls_key = character.primary_class.lower().strip()
-                cfg = SPELLCASTING_CONFIG.get(cls_key)
+        spells_source = (
+            character.sheet_data.get('spells') or
+            character.dynamic.get('spells') or
+            basic.get('in-spells-data') or
+            basic.get('in-spells')
+        )
 
-            spell_stat = basic.get('in-spell-stat')
-            if not spell_stat or (spell_stat.lower() == 'cha' and cfg and cfg['stat'] != 'cha'):
-                spell_stat = cfg['stat'] if cfg else 'cha'
-            else:
-                spell_stat = spell_stat.lower()
+        cls_key = None
+        cfg = None
+        for c in character.classes:
+            ck = c['class'].lower().strip()
+            if ck in SPELLCASTING_CONFIG:
+                cls_key = ck
+                cfg = SPELLCASTING_CONFIG[ck]
+                break
+        if not cls_key:
+            cls_key = character.primary_class.lower().strip()
+            cfg = SPELLCASTING_CONFIG.get(cls_key)
 
-            stat_map = {
-                'str': character.str_score,
-                'dex': character.dex_score,
-                'con': character.con_score,
-                'int': character.int_score,
-                'wis': character.wis_score,
-                'cha': character.cha_score
-            }
-            casting_mod = parse_int(calc_mod(stat_map.get(spell_stat, character.cha_score)))
+        spell_stat = basic.get('in-spell-stat')
+        if not spell_stat and isinstance(spells_source, dict):
+            spell_stat = spells_source.get('castingStat')
+        if not spell_stat or (spell_stat.lower() == 'cha' and cfg and cfg['stat'] != 'cha'):
+            spell_stat = cfg['stat'] if cfg else 'cha'
+        else:
+            spell_stat = spell_stat.lower()
 
-            spells_data = basic.get('in-spells-data') or basic.get('in-spells', '')
-            if spells_data:
+        stat_map = {
+            'str': character.str_score,
+            'dex': character.dex_score,
+            'con': character.con_score,
+            'int': character.int_score,
+            'wis': character.wis_score,
+            'cha': character.cha_score
+        }
+        casting_mod = parse_int(calc_mod(stat_map.get(spell_stat, character.cha_score)))
+
+        if spells_source or character.has_spellcasting():
+            if isinstance(spells_source, str):
                 try:
-                    spells_obj = json.loads(spells_data) if isinstance(spells_data, str) else spells_data
-                    for lvl_str, s_info in spells_obj.items():
-                        lvl = int(lvl_str)
-                        if lvl > 9: continue
-                        s_list = s_info.get('spells', [])
-                        known_val = s_info.get('known', len(s_list) if s_list else '')
-                        fields[f'Spells {lvl} Known'] = str(known_val) if known_val != '' else ''
-                        dc_val = s_info.get('dc', 10 + lvl + casting_mod)
-                        fields[f'Spells {lvl} Save DC'] = str(dc_val)
-                        slots = s_info.get('slots', '') or s_info.get('per_day', '')
-                        if slots:
-                            fields[f'Spells {lvl} Per Day'] = str(slots)
-                        bonus_spells = s_info.get('bonus', '')
-                        if bonus_spells:
-                            fields[f'Spells {lvl} Bonus'] = str(bonus_spells)
+                    spells_source = json.loads(spells_source)
+                except Exception:
+                    spells_source = {}
 
-                        for s_idx, sp_name in enumerate(s_list[:8], 1):
-                            fields[f'Spells {lvl} {s_idx}'] = str(sp_name).title()
-                except Exception as e:
-                    print(f"[WARNING] Spell data could not be processed: {e}")
+            levels_dict = {}
+            if isinstance(spells_source, dict):
+                if 'levels' in spells_source and isinstance(spells_source['levels'], dict):
+                    levels_dict = spells_source['levels']
+                elif 'slots' in spells_source and isinstance(spells_source['slots'], list):
+                    for sl in spells_source['slots']:
+                        lvl = sl.get('lvl', 0)
+                        levels_dict[str(lvl)] = {
+                            'known': sl.get('known', ''),
+                            'per_day': sl.get('perDay', ''),
+                            'bonus': sl.get('bonus', ''),
+                            'dc': sl.get('dc', 10 + lvl + casting_mod),
+                            'spells': sl.get('spells', [])
+                        }
+                else:
+                    levels_dict = spells_source
+
+                slots = spells_source.get('slots', [])
+                if isinstance(slots, list):
+                    for slot in slots:
+                        try:
+                            slot_level = str(int(slot.get('lvl', 0)))
+                        except (AttributeError, TypeError, ValueError):
+                            continue
+                        level_data = dict(levels_dict.get(slot_level, {}))
+                        for source_key, target_key in (('known', 'known'), ('perDay', 'per_day')):
+                            value = slot.get(source_key)
+                            if value is not None and str(value).strip():
+                                existing_value = level_data.get(target_key)
+                                is_empty_existing = existing_value is None or str(existing_value).strip() in ('', '—')
+                                is_zero_fallback = parse_int(value) == 0 and not is_empty_existing
+                                if not is_zero_fallback:
+                                    level_data[target_key] = value
+                        levels_dict[slot_level] = level_data
+
+            if isinstance(levels_dict, dict):
+                for lvl_str, s_info in levels_dict.items():
+                    try:
+                        lvl = int(lvl_str)
+                    except ValueError:
+                        continue
+                    if lvl > 9 or not isinstance(s_info, dict):
+                        continue
+                    s_list = s_info.get('spells', [])
+                    known_val = s_info.get('known', '')
+                    if known_val == '' and s_list:
+                        known_val = len(s_list)
+                    fields[f'Spells {lvl} Known'] = str(known_val) if known_val != '' else ''
+                    dc_val = s_info.get('dc')
+                    if dc_val is None or str(dc_val).strip() == '' or str(dc_val) == '—':
+                        dc_val = 10 + lvl + casting_mod
+                    fields[f'Spells {lvl} Save DC'] = str(dc_val) if dc_val != '' else ''
+                    slots = s_info.get('slots', '') or s_info.get('per_day', '')
+                    if str(slots) == '—': slots = ''
+                    fields[f'Spells {lvl} Per Day'] = str(slots) if slots != '' else ''
+                    bonus_spells = s_info.get('bonus', '')
+                    if str(bonus_spells) == '—': bonus_spells = ''
+                    fields[f'Spells {lvl} Bonus'] = str(bonus_spells) if bonus_spells != '' else ''
+
+                    for s_idx, sp_name in enumerate(s_list[:8], 1):
+                        fields[f'Spells {lvl} {s_idx}'] = str(sp_name).strip()
 
             in_sp_cls = basic.get('in-spell-class', '').strip()
+            if not in_sp_cls and isinstance(spells_source, dict):
+                in_sp_cls = str(spells_source.get('castingClass', '')).strip()
 
             if in_sp_cls:
                 spell_class = in_sp_cls.title()
@@ -578,7 +667,10 @@ class PdfCharacterSheetView:
                 spell_class = character.primary_class.title()
 
             in_cl = basic.get('in-spell-cl', '').strip()
-            if in_cl and in_cl != '10':
+            if not in_cl and isinstance(spells_source, dict):
+                in_cl = str(spells_source.get('cl', '')).strip()
+
+            if in_cl:
                 spell_cl = in_cl
             else:
                 sp_lvl = character.level

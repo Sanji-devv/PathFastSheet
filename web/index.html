@@ -100,10 +100,7 @@
       <div class="row g-2 align-items-center mb-2">
 
         <div class="col-12 col-sm-6 col-lg-4">
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-0">Character Name</label>
-            <span class="badge bg-primary px-2 py-0_5 font-monospace" style="font-size: 0.68rem;">Main</span>
-          </div>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Character Name</label>
           <input type="text" id="sheetCharName" class="form-control form-control-sm fw-bold text-heading pf-box-input text-start px-2_5" placeholder="Character Name" style="font-size: 1.05rem;" />
         </div>
 
@@ -128,10 +125,7 @@
         </div>
 
         <div class="col-6 col-sm-4 col-lg-2">
-          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1 d-flex justify-content-between">
-            <span>Level</span>
-            <span class="badge bg-label-primary font-monospace py-0 px-1" id="sheetLvlCounter">1</span>
-          </label>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Level</label>
           <div class="input-group input-group-sm">
             <button class="btn btn-outline-secondary px-2" type="button" id="btnLvlDown"><i class="icon-base ti tabler-minus"></i></button>
             <input type="number" id="sheetLevelInput" class="form-control form-control-sm text-center font-monospace fw-bold pf-box-input" min="1" max="20" value="1" />
@@ -282,8 +276,12 @@
           <input type="text" id="sheetAgeInput" class="form-control form-control-sm pf-box-input text-center px-1" placeholder="25" />
         </div>
         <div>
-          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Height / Weight</label>
-          <input type="text" id="sheetHeightInput" class="form-control form-control-sm pf-box-input text-center px-1" placeholder="6' 1\" 185 lbs" />
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Height</label>
+          <input type="text" id="sheetHeightInput" class="form-control form-control-sm pf-box-input text-center px-1" placeholder="6' 1\"" />
+        </div>
+        <div>
+          <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Weight</label>
+          <input type="text" id="sheetWeightInput" class="form-control form-control-sm pf-box-input text-center px-1" placeholder="185 lbs" />
         </div>
         <div>
           <label class="form-label text-uppercase text-body-secondary fw-semibold small mb-1">Hair / Eyes</label>
@@ -818,7 +816,7 @@
             <div class="pf-weapon-block weapon-row" data-idx="1">
               <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
                 <div class="flex-grow-1">
-                  <input type="text" class="form-control form-control-sm pf-box-input text-start px-2 fw-bold wp-name" placeholder="Weapon Name" value="Longsword +1" style="font-size: 0.95rem;" />
+                  <input type="text" class="form-control form-control-sm pf-box-input text-start px-2 fw-bold wp-name" placeholder="Weapon Name" value="Longsword" style="font-size: 0.95rem;" />
                 </div>
                 <div style="min-width: 120px;">
                   <select class="form-select form-select-sm pf-box-input px-1 wp-atk-type">
@@ -846,7 +844,7 @@
                 </div>
                 <div class="col-4 col-sm-2">
                   <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Enh (+)</label>
-                  <input type="number" class="form-control form-control-sm pf-box-input wp-enh text-center px-1" min="0" max="5" value="1" />
+                  <input type="number" class="form-control form-control-sm pf-box-input wp-enh text-center px-1" min="0" max="5" value="0" />
                 </div>
                 <div class="col-4 col-sm-2">
                   <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Atk Misc</label>
@@ -890,87 +888,6 @@
                 <div class="col-6 col-sm-4">
                   <div class="pf-box-input font-monospace fw-bold text-danger py-1_5 wp-crit-dmg-total">
                     2d8+0
-                  </div>
-                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-crit-dmg-formula">x2</span></small>
-                </div>
-              </div>
-            </div>
-
-            <div class="pf-weapon-block weapon-row" data-idx="2">
-              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
-                <div class="flex-grow-1">
-                  <input type="text" class="form-control form-control-sm pf-box-input text-start px-2 fw-bold wp-name" placeholder="Weapon Name" value="Heavy Crossbow" style="font-size: 0.95rem;" />
-                </div>
-                <div style="min-width: 120px;">
-                  <select class="form-select form-select-sm pf-box-input px-1 wp-atk-type">
-                    <option value="melee">Melee (STR)</option>
-                    <option value="ranged" selected>Ranged (DEX)</option>
-                  </select>
-                </div>
-                <button type="button" class="btn btn-icon btn-text-danger btn-xs btn-del-weapon" title="Delete Weapon">
-                  <i class="icon-base ti tabler-trash fs-5"></i>
-                </button>
-              </div>
-
-              <div class="row g-1_5 align-items-center mb-2 font-monospace small">
-                <div class="col-4 col-sm-2">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Damage Type</label>
-                  <input type="text" class="form-control form-control-sm pf-box-input wp-type" placeholder="Piercing" value="Piercing" />
-                </div>
-                <div class="col-4 col-sm-2">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Base Die</label>
-                  <input type="text" class="form-control form-control-sm pf-box-input wp-base-die" placeholder="1d10" value="1d10" />
-                </div>
-                <div class="col-4 col-sm-2">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Range</label>
-                  <input type="text" class="form-control form-control-sm pf-box-input wp-range" placeholder="80 ft." value="80 ft." />
-                </div>
-                <div class="col-4 col-sm-2">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Enh (+)</label>
-                  <input type="number" class="form-control form-control-sm pf-box-input wp-enh text-center px-1" min="0" max="5" value="0" />
-                </div>
-                <div class="col-4 col-sm-2">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Atk Misc</label>
-                  <input type="number" class="form-control form-control-sm pf-box-input wp-atk-misc text-center px-1" value="0" />
-                </div>
-                <div class="col-4 col-sm-2">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Dmg Misc</label>
-                  <input type="number" class="form-control form-control-sm pf-box-input wp-dmg-misc text-center px-1" value="0" />
-                </div>
-                <div class="col-6 col-sm-3 mt-1">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Crit Threat</label>
-                  <input type="text" class="form-control form-control-sm pf-box-input wp-crit-range text-center px-1" placeholder="19-20" value="19-20" />
-                </div>
-                <div class="col-6 col-sm-3 mt-1">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Multiplier</label>
-                  <select class="form-select form-select-sm pf-box-input wp-crit-mult text-center px-1">
-                    <option value="2" selected>x2</option>
-                    <option value="3">x3</option>
-                    <option value="4">x4</option>
-                  </select>
-                </div>
-                <div class="col-12 col-sm-6 mt-1">
-                  <label class="text-body-secondary d-block" style="font-size: 0.65rem;">Ammunition</label>
-                  <input type="text" class="form-control form-control-sm pf-box-input wp-ammo text-start px-2" placeholder="30 bolts" value="30 bolts" />
-                </div>
-              </div>
-
-              <div class="row g-2 text-center">
-                <div class="col-12 col-sm-4">
-                  <div class="pf-mod-box font-monospace fw-bold text-primary py-1_5 px-2 w-100 cursor-pointer wp-atk-total" title="Click to roll attack check!">
-                    +0
-                  </div>
-                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-atk-formula">BAB+DEX+Enh</span></small>
-                </div>
-                <div class="col-6 col-sm-4">
-                  <div class="pf-box-input font-monospace fw-bold text-warning py-1_5 wp-dmg-total">
-                    1d10+0
-                  </div>
-                  <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-dmg-formula">Die+Enh</span></small>
-                </div>
-                <div class="col-6 col-sm-4">
-                  <div class="pf-box-input font-monospace fw-bold text-danger py-1_5 wp-crit-dmg-total">
-                    2d10+0
                   </div>
                   <small class="text-body-secondary font-monospace d-block" style="font-size: 0.65rem;"><span class="wp-crit-dmg-formula">x2</span></small>
                 </div>
@@ -1180,7 +1097,7 @@
                             <i class="icon-base ti tabler-external-link" style="font-size: 0.8rem;"></i>
                           </a>
                         </div>
-                        <small class="text-body-secondary d-block text-truncate" style="font-size: 0.68rem;" id="sheetTraitDescText_uye"></small>
+                        <small class="text-body-secondary d-block trait-description" id="sheetTraitDescText_uye"></small>
                       </div>
 
                       <div class="trait-empty-block text-body-secondary small d-none cursor-pointer" id="sheetTraitEmpty_uye">
@@ -1216,7 +1133,7 @@
                             <i class="icon-base ti tabler-external-link" style="font-size: 0.8rem;"></i>
                           </a>
                         </div>
-                        <small class="text-body-secondary d-block text-truncate" style="font-size: 0.68rem;" id="sheetTraitDescText_kidemli"></small>
+                        <small class="text-body-secondary d-block trait-description" id="sheetTraitDescText_kidemli"></small>
                       </div>
 
                       <div class="trait-empty-block text-body-secondary small d-none cursor-pointer" id="sheetTraitEmpty_kidemli">
@@ -1252,7 +1169,7 @@
                             <i class="icon-base ti tabler-external-link" style="font-size: 0.8rem;"></i>
                           </a>
                         </div>
-                        <small class="text-body-secondary d-block text-truncate" style="font-size: 0.68rem;" id="sheetTraitDescText_uzman"></small>
+                        <small class="text-body-secondary d-block trait-description" id="sheetTraitDescText_uzman"></small>
                       </div>
 
                       <div class="trait-empty-block text-body-secondary small d-none cursor-pointer" id="sheetTraitEmpty_uzman">
@@ -1681,6 +1598,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script src="js/pf_data.js"></script>
-  <script src="js/app.js?v=2.2"></script>
+  <script src="js/app.js?v=2.7"></script>
 </body>
 </html>

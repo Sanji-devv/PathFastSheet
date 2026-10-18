@@ -685,7 +685,7 @@ class Character:
                 if w_stripped:
                     excluded_names.add(w_stripped)
 
-        gear_data = self.dynamic.get('gear') or self.basic.get('in-gear', '')
+        gear_data = self.sheet_data.get('gear') or self.dynamic.get('gear') or self.basic.get('in-gear', '')
         raw_items = []
         if isinstance(gear_data, list):
             raw_items = [

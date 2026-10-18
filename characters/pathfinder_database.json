@@ -1,0 +1,1915 @@
+{
+  "_meta": {
+    "source": "Valiant-Shade-Web/config/enums",
+    "system": "Pathfinder 1E",
+    "generated_by": "parse_enums.py",
+    "description": "Comprehensive Pathfinder 1E game data extracted from Valiant-Shade-Web enum files"
+  },
+  "classes": {
+    "barbarian": {
+      "key": "barbarian",
+      "name": "Barbarian",
+      "category": "core",
+      "hit_die": "d12",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any non-lawful",
+      "spellcasting": "none",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "bard": {
+      "key": "bard",
+      "name": "Bard",
+      "category": "core",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 6,
+      "alignment": "Any",
+      "spellcasting": "arcane (spontaneous, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "cleric": {
+      "key": "cleric",
+      "name": "Cleric",
+      "category": "core",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 2,
+      "alignment": "Within one step of deity",
+      "spellcasting": "divine (prepared, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "druid": {
+      "key": "druid",
+      "name": "Druid",
+      "category": "core",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any neutral",
+      "spellcasting": "divine (prepared, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "fighter": {
+      "key": "fighter",
+      "name": "Fighter",
+      "category": "core",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "none",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "monk": {
+      "key": "monk",
+      "name": "Monk",
+      "category": "core",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any lawful",
+      "spellcasting": "none (ki powers)",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "paladin": {
+      "key": "paladin",
+      "name": "Paladin",
+      "category": "core",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 2,
+      "alignment": "Lawful Good",
+      "spellcasting": "divine (prepared, up to 4th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th"
+      ]
+    },
+    "ranger": {
+      "key": "ranger",
+      "name": "Ranger",
+      "category": "core",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 6,
+      "alignment": "Any",
+      "spellcasting": "divine (prepared, up to 4th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th"
+      ]
+    },
+    "rogue": {
+      "key": "rogue",
+      "name": "Rogue",
+      "category": "core",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 8,
+      "alignment": "Any",
+      "spellcasting": "none",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "sorcerer": {
+      "key": "sorcerer",
+      "name": "Sorcerer",
+      "category": "core",
+      "hit_die": "d6",
+      "bab_table": "bab_section_3",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "arcane (spontaneous, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "wizard": {
+      "key": "wizard",
+      "name": "Wizard",
+      "category": "core",
+      "hit_die": "d6",
+      "bab_table": "bab_section_3",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "arcane (prepared, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "alchemist": {
+      "key": "alchemist",
+      "name": "Alchemist",
+      "category": "base",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "alchemy (extracts, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "cavalier": {
+      "key": "cavalier",
+      "name": "Cavalier",
+      "category": "base",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "none",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "gunslinger": {
+      "key": "gunslinger",
+      "name": "Gunslinger",
+      "category": "base",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "none (grit deeds)",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "inquisitor": {
+      "key": "inquisitor",
+      "name": "Inquisitor",
+      "category": "base",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 6,
+      "alignment": "Within one step of deity",
+      "spellcasting": "divine (spontaneous, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "magus": {
+      "key": "magus",
+      "name": "Magus",
+      "category": "base",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "arcane (prepared, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "oracle": {
+      "key": "oracle",
+      "name": "Oracle",
+      "category": "base",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "divine (spontaneous, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "summoner": {
+      "key": "summoner",
+      "name": "Summoner",
+      "category": "base",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "arcane (spontaneous, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "vigilante": {
+      "key": "vigilante",
+      "name": "Vigilante",
+      "category": "base",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 6,
+      "alignment": "Any",
+      "spellcasting": "none (optional archetype casting)",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "witch": {
+      "key": "witch",
+      "name": "Witch",
+      "category": "base",
+      "hit_die": "d6",
+      "bab_table": "bab_section_3",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "arcane (prepared, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "0",
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "arcanist": {
+      "key": "arcanist",
+      "name": "Arcanist",
+      "category": "hybrid",
+      "hit_die": "d6",
+      "bab_table": "bab_section_3",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "arcane (hybrid prepared/spontaneous, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "bloodrager": {
+      "key": "bloodrager",
+      "name": "Bloodrager",
+      "category": "hybrid",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any non-lawful",
+      "spellcasting": "arcane (spontaneous, up to 4th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th"
+      ]
+    },
+    "brawler": {
+      "key": "brawler",
+      "name": "Brawler",
+      "category": "hybrid",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "none",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "hunter": {
+      "key": "hunter",
+      "name": "Hunter",
+      "category": "hybrid",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 6,
+      "alignment": "Any neutral",
+      "spellcasting": "divine (spontaneous, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "investigator": {
+      "key": "investigator",
+      "name": "Investigator",
+      "category": "hybrid",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 6,
+      "alignment": "Any",
+      "spellcasting": "alchemy (extracts, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "shaman": {
+      "key": "shaman",
+      "name": "Shaman",
+      "category": "hybrid",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "divine (prepared, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "skald": {
+      "key": "skald",
+      "name": "Skald",
+      "category": "hybrid",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "arcane (spontaneous, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "slayer": {
+      "key": "slayer",
+      "name": "Slayer",
+      "category": "hybrid",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 6,
+      "alignment": "Any",
+      "spellcasting": "none",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "swashbuckler": {
+      "key": "swashbuckler",
+      "name": "Swashbuckler",
+      "category": "hybrid",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "none (panache deeds)",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "warpriest": {
+      "key": "warpriest",
+      "name": "Warpriest",
+      "category": "hybrid",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 2,
+      "alignment": "Within one step of deity",
+      "spellcasting": "divine (prepared, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "kineticist": {
+      "key": "kineticist",
+      "name": "Kineticist",
+      "category": "occult",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "psychic spell-like (kinetic blast / wild talents)",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "medium": {
+      "key": "medium",
+      "name": "Medium",
+      "category": "occult",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "psychic (spontaneous, up to 4th or 6th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th"
+      ]
+    },
+    "mesmerist": {
+      "key": "mesmerist",
+      "name": "Mesmerist",
+      "category": "occult",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 6,
+      "alignment": "Any",
+      "spellcasting": "psychic (spontaneous, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "occultist": {
+      "key": "occultist",
+      "name": "Occultist",
+      "category": "occult",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "psychic (spontaneous implements, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "psychic": {
+      "key": "psychic",
+      "name": "Psychic",
+      "category": "occult",
+      "hit_die": "d6",
+      "bab_table": "bab_section_3",
+      "skill_ranks_per_level": 2,
+      "alignment": "Any",
+      "spellcasting": "psychic (spontaneous, up to 9th level)",
+      "has_spells": true,
+      "casting_stat": "int",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th",
+        "7th",
+        "8th",
+        "9th"
+      ]
+    },
+    "spiritualist": {
+      "key": "spiritualist",
+      "name": "Spiritualist",
+      "category": "occult",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any",
+      "spellcasting": "psychic (spontaneous, up to 6th level)",
+      "has_spells": true,
+      "casting_stat": "wis",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th",
+        "5th",
+        "6th"
+      ]
+    },
+    "antipaladin": {
+      "key": "antipaladin",
+      "name": "Antipaladin",
+      "category": "alternate",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 2,
+      "alignment": "Chaotic Evil",
+      "spellcasting": "divine (prepared, up to 4th level)",
+      "has_spells": true,
+      "casting_stat": "cha",
+      "spell_levels": [
+        "1st",
+        "2nd",
+        "3rd",
+        "4th"
+      ]
+    },
+    "ninja": {
+      "key": "ninja",
+      "name": "Ninja",
+      "category": "alternate",
+      "hit_die": "d8",
+      "bab_table": "bab_section_2",
+      "skill_ranks_per_level": 8,
+      "alignment": "Any",
+      "spellcasting": "none (ki powers / ninja tricks)",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    },
+    "samurai": {
+      "key": "samurai",
+      "name": "Samurai",
+      "category": "alternate",
+      "hit_die": "d10",
+      "bab_table": "bab_section_1",
+      "skill_ranks_per_level": 4,
+      "alignment": "Any lawful",
+      "spellcasting": "none",
+      "has_spells": false,
+      "casting_stat": "none",
+      "spell_levels": []
+    }
+  },
+  "races": {
+    "human": {
+      "key": "human",
+      "name": "Human",
+      "category": "Core Races",
+      "subcategory": "Core",
+      "race_points": 10,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "Any",
+      "ability_bonus_summary": "+2 to One Ability Score"
+    },
+    "elf": {
+      "key": "elf",
+      "name": "Elf",
+      "category": "Core Races",
+      "subcategory": "Core",
+      "race_points": 10,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Int",
+      "ability_bonus_summary": "+Dex, +Int / -Con"
+    },
+    "dwarf": {
+      "key": "dwarf",
+      "name": "Dwarf",
+      "category": "Core Races",
+      "subcategory": "Core",
+      "race_points": 10,
+      "size": "Medium",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Con, +Wis",
+      "ability_bonus_summary": "+Con, +Wis / -Cha"
+    },
+    "gnome": {
+      "key": "gnome",
+      "name": "Gnome",
+      "category": "Core Races",
+      "subcategory": "Core",
+      "race_points": 10,
+      "size": "Small",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Con, +Cha",
+      "ability_bonus_summary": "+Con, +Cha / -Str"
+    },
+    "half_elf": {
+      "key": "half_elf",
+      "name": "Half Elf",
+      "category": "Core Races",
+      "subcategory": "Core",
+      "race_points": 10,
+      "size": "Half-elves are Medium creatures and have no bonuses or penalties due to their size.",
+      "speed": "Half-elves have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 to One Ability Score"
+    },
+    "half_orc": {
+      "key": "half_orc",
+      "name": "Half Orc",
+      "category": "Core Races",
+      "subcategory": "Core",
+      "race_points": 10,
+      "size": "Half-orcs are Medium creatures and thus have no bonuses or penalties due to their size.",
+      "speed": "Half-orcs have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 to One Ability Score"
+    },
+    "halfling": {
+      "key": "halfling",
+      "name": "Halfling",
+      "category": "Core Races",
+      "subcategory": "Core",
+      "race_points": 9,
+      "size": "Small",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Dex, +Cha",
+      "ability_bonus_summary": "+Dex, +Cha / -Str"
+    },
+    "aasimar": {
+      "key": "aasimar",
+      "name": "Aasimar",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 15,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Wis, +Cha",
+      "ability_bonus_summary": "+Wis, +Cha"
+    },
+    "android": {
+      "key": "android",
+      "name": "Android",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Int",
+      "ability_bonus_summary": "+Dex, +Int / -Cha"
+    },
+    "aquatic_elf": {
+      "key": "aquatic_elf",
+      "name": "Aquatic Elf",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Int, -2 Con"
+    },
+    "astomoi": {
+      "key": "astomoi",
+      "name": "Astomoi",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Astomoi are Medium creatures and have no bonuses or penalties due to their size.",
+      "speed": "Astomoi have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Wis, -2 Con"
+    },
+    "caligni": {
+      "key": "caligni",
+      "name": "Caligni",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Medium",
+      "speed": "Caligni have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Con"
+    },
+    "catfolk": {
+      "key": "catfolk",
+      "name": "Catfolk",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 9,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Cha",
+      "ability_bonus_summary": "+Dex, +Cha / -Wis"
+    },
+    "changeling": {
+      "key": "changeling",
+      "name": "Changeling",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": "#",
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "Wis , Cha",
+      "ability_bonus_summary": "+2 Wis, +2 Cha, -2 Con"
+    },
+    "deep_one_hybrid": {
+      "key": "deep_one_hybrid",
+      "name": "Deep One Hybrid",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Deep One Hybrids are Medium creatures and thus receive no bonuses or penalties due to their size.",
+      "speed": "A deep one hybrid’s base speed is 20 feet, as it walks with a shuffling gait. A deep one hybrid has a swim speed of 30 feet, and gains a +8 racial bonus on all Swim checks.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Con, +2 Wis, -2 Dex"
+    },
+    "dhampir": {
+      "key": "dhampir",
+      "name": "Dhampir",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 11,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Cha",
+      "ability_bonus_summary": "+Dex, +Cha / -Con"
+    },
+    "drider": {
+      "key": "drider",
+      "name": "Drider",
+      "category": "Very Powerful Races (31+ Race Points)",
+      "subcategory": "31+",
+      "race_points": 31,
+      "size": "Large (7 RP)",
+      "speed": "Normal (0 RP); +10 ft. due to extra legs (see below)",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Con, +2 Wis"
+    },
+    "duergar": {
+      "key": "duergar",
+      "name": "Duergar",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 8,
+      "size": "Medium",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Con, +Wis",
+      "ability_bonus_summary": "+Con, +Wis / -Cha (-4)"
+    },
+    "fetchling": {
+      "key": "fetchling",
+      "name": "Fetchling",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 17,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Cha",
+      "ability_bonus_summary": "+Dex, +Cha / -Wis"
+    },
+    "ganzi": {
+      "key": "ganzi",
+      "name": "Ganzi",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Ganzis are Medium creatures and have no bonuses of penalties due to their size.",
+      "speed": "Ganzis have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Con, +2 Cha, -2 Int"
+    },
+    "gargoyle": {
+      "key": "gargoyle",
+      "name": "Gargoyle",
+      "category": "Very Powerful Races (31+ Race Points)",
+      "subcategory": "31+",
+      "race_points": 31,
+      "size": "Medium (0 RP)",
+      "speed": "Normal speed (0 RP)",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+4 Con, -2 Int, -2 Wis, -2 Cha"
+    },
+    "gathlain": {
+      "key": "gathlain",
+      "name": "Gathlain",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Gathlains are Small and gain a +1 size bonus to their AC, a +1 size bonus on attack rolls , a –1 penalty on combat maneuver checks and to CMD , a +2 bonus on Fly checks, and a +4 size bonus on Stealth checks.",
+      "speed": "Gathlains have a base speed of 30 feet and a fly speed of 40 feet (poor maneuverability).",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Cha, -2 Con"
+    },
+    "ghoran": {
+      "key": "ghoran",
+      "name": "Ghoran",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Medium",
+      "speed": "30 ft.*",
+      "ability_score_plus": "+Con, +Cha",
+      "ability_bonus_summary": "+Con, +Cha / -Int"
+    },
+    "gillmen": {
+      "key": "gillmen",
+      "name": "Gillmen",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Gillmen are Medium creatures and thus have no bonuses or penalties due to their size.",
+      "speed": "Gillmen have a base speed of 30 feet on land. As aquatic creatures, they also have a swim speed of 30 feet, can move in water without making Swim checks, and always treat Swim as a class skill.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Con, +2 Cha, -2 Wis"
+    },
+    "gnoll": {
+      "key": "gnoll",
+      "name": "Gnoll",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 10,
+      "size": "Medium (0 RP)",
+      "speed": "Normal (0 RP)",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Str, +2 Con"
+    },
+    "goblin": {
+      "key": "goblin",
+      "name": "Goblin",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 10,
+      "size": "Small",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex (+4)",
+      "ability_bonus_summary": "+Dex (+4) / -Str, -Cha"
+    },
+    "grippli": {
+      "key": "grippli",
+      "name": "Grippli",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 6,
+      "size": "Small",
+      "speed": "30 ft., Climb 20 ft.",
+      "ability_score_plus": "+Dex, +Wis",
+      "ability_bonus_summary": "+Dex, +Wis / -Str"
+    },
+    "hobgoblin": {
+      "key": "hobgoblin",
+      "name": "Hobgoblin",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 9,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Con",
+      "ability_bonus_summary": "+Dex, +Con"
+    },
+    "ifrit": {
+      "key": "ifrit",
+      "name": "Ifrit",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 6,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Cha",
+      "ability_bonus_summary": "+Dex, +Cha / -Wis"
+    },
+    "kasatha": {
+      "key": "kasatha",
+      "name": "Kasatha",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Kasathas are Medium creatures and have no bonuses or penalties due to their size. (0 RP)",
+      "speed": "Kasathas have a base speed of 30 feet. (0 RP)",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Wis"
+    },
+    "kitsune": {
+      "key": "kitsune",
+      "name": "Kitsune",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": "#",
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Cha",
+      "ability_bonus_summary": "+Dex, +Cha / -Str"
+    },
+    "kobold": {
+      "key": "kobold",
+      "name": "Kobold",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 5,
+      "size": "Small",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex",
+      "ability_bonus_summary": "+Dex / -Str (-4), -Con"
+    },
+    "kuru": {
+      "key": "kuru",
+      "name": "Kuru",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Con, -2 Int"
+    },
+    "lashunta": {
+      "key": "lashunta",
+      "name": "Lashunta",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "Int",
+      "ability_bonus_summary": "+2 Int, +2 Str or +2 Cha, -2 Con or -2 Wis"
+    },
+    "lizardfolk": {
+      "key": "lizardfolk",
+      "name": "Lizardfolk",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 10,
+      "size": "Medium (0 RP)",
+      "speed": "Normal (0 RP)",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Str, +2 Con"
+    },
+    "merfolk": {
+      "key": "merfolk",
+      "name": "Merfolk",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": "#",
+      "size": "Medium",
+      "speed": "5 ft., Swim 50 ft.",
+      "ability_score_plus": "+Dex, +Con, +Cha",
+      "ability_bonus_summary": "+Dex, +Con, +Cha"
+    },
+    "monkey_goblin": {
+      "key": "monkey_goblin",
+      "name": "Monkey Goblin",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 10,
+      "size": "Small",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Dex",
+      "ability_bonus_summary": "+Dex / -Wis, -Cha"
+    },
+    "munavri": {
+      "key": "munavri",
+      "name": "Munavri",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Medium",
+      "speed": "Munavris have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Con, +2 Int, +2 Wis, +2 Cha, -2 Str"
+    },
+    "nagaji": {
+      "key": "nagaji",
+      "name": "Nagaji",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": "#",
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Str, +Cha",
+      "ability_bonus_summary": "+Str, +Cha / -Int"
+    },
+    "orc": {
+      "key": "orc",
+      "name": "Orc",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 8,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "Any",
+      "ability_bonus_summary": "+4 Str, -2 Int, -2 Wis, -2 Cha"
+    },
+    "oread": {
+      "key": "oread",
+      "name": "Oread",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 6,
+      "size": "Medium",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Str, +Wis",
+      "ability_bonus_summary": "+Str, +Wis / -Cha"
+    },
+    "ratfolk": {
+      "key": "ratfolk",
+      "name": "Ratfolk",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 9,
+      "size": "Small",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Dex, +Int",
+      "ability_bonus_summary": "+Dex, +Int / -Str"
+    },
+    "reptoid": {
+      "key": "reptoid",
+      "name": "Reptoid",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": null,
+      "size": "Reptoids are Medium creatures and have no bonuses or penalties due to their size.",
+      "speed": "Reptoids have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Str, +2 Cha, -2 Dex"
+    },
+    "samsaran": {
+      "key": "samsaran",
+      "name": "Samsaran",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": "#",
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "Int , Wis",
+      "ability_bonus_summary": "+2 Int, +2 Wis, -2 Con"
+    },
+    "shabti": {
+      "key": "shabti",
+      "name": "Shabti",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Shabti are Medium creatures and receive no bonuses or penalties due to their size.",
+      "speed": "Shabti have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Con, +2 Cha"
+    },
+    "skinwalker": {
+      "key": "skinwalker",
+      "name": "Skinwalker",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 10,
+      "size": "Skinwalkers are Medium creatures and have no bonuses or penalties due to their size.",
+      "speed": "Skinwalkers have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Wis, -2 Int"
+    },
+    "strix": {
+      "key": "strix",
+      "name": "Strix",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": "#",
+      "size": "Medium",
+      "speed": "30 ft., Fly 60 ft.",
+      "ability_score_plus": "+Dex",
+      "ability_bonus_summary": "+Dex / -Cha"
+    },
+    "suli": {
+      "key": "suli",
+      "name": "Suli",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 16,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Str, +Cha",
+      "ability_bonus_summary": "+Str, +Cha / -Int"
+    },
+    "svirfneblin": {
+      "key": "svirfneblin",
+      "name": "Svirfneblin",
+      "category": "Monstrous Races (21-30 Race Points)",
+      "subcategory": "21-30",
+      "race_points": 24,
+      "size": "Small",
+      "speed": "20 ft.",
+      "ability_score_plus": "+Dex, +Wis",
+      "ability_bonus_summary": "+Dex, +Wis / -Str, -Cha"
+    },
+    "sylph": {
+      "key": "sylph",
+      "name": "Sylph",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 6,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Int",
+      "ability_bonus_summary": "+Dex, +Int / -Con"
+    },
+    "syrinx": {
+      "key": "syrinx",
+      "name": "Syrinx",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Medium",
+      "speed": "Syrinx have a base speed of 30 feet.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Wis, -2 Dex"
+    },
+    "tengu": {
+      "key": "tengu",
+      "name": "Tengu",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 13,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Wis",
+      "ability_bonus_summary": "+Dex, +Wis / -Con"
+    },
+    "tiefling": {
+      "key": "tiefling",
+      "name": "Tiefling",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 13,
+      "size": "Medium",
+      "speed": "30 ft.",
+      "ability_score_plus": "+Dex, +Int",
+      "ability_bonus_summary": "+Dex, +Int / -Cha"
+    },
+    "triaxian": {
+      "key": "triaxian",
+      "name": "Triaxian",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 10,
+      "size": "Triaxians are Medium creatures and have no bonuses or penalties due to their size.",
+      "speed": "Triaxians have a base speed of 30 ft.",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Con, +2 Wis, -2 Str"
+    },
+    "trox": {
+      "key": "trox",
+      "name": "Trox",
+      "category": "Very Powerful Races (31+ Race Points)",
+      "subcategory": "31+",
+      "race_points": 30,
+      "size": "Large (+2 Str , -2 Dex )(7 RP)",
+      "speed": "Normal (0 RP)",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+8 Str, -2 Dex, -2 Int, -2 Wis, -2 Cha"
+    },
+    "undine": {
+      "key": "undine",
+      "name": "Undine",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 7,
+      "size": "Medium",
+      "speed": "30 ft., Swim 30 ft.",
+      "ability_score_plus": "+Dex, +Wis",
+      "ability_bonus_summary": "+Dex, +Wis / -Str"
+    },
+    "vanara": {
+      "key": "vanara",
+      "name": "Vanara",
+      "category": "Standard Races (1-10 Race Points)",
+      "subcategory": "1-10",
+      "race_points": 8,
+      "size": "Medium",
+      "speed": "30 ft., Climb 20 ft.",
+      "ability_score_plus": "+Dex, +Wis",
+      "ability_bonus_summary": "+Dex, +Wis / -Cha"
+    },
+    "vishkanya": {
+      "key": "vishkanya",
+      "name": "Vishkanya",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 13,
+      "size": "Vishkanyas are Medium creatures and thus have no bonuses or penalties due to their size.",
+      "speed": "Vishkanyas have a base speed of 30 feet.",
+      "ability_score_plus": "",
+      "ability_bonus_summary": "+2 Dex, +2 Cha, -2 Wis"
+    },
+    "wayang": {
+      "key": "wayang",
+      "name": "Wayang",
+      "category": "Race Points Unknown",
+      "subcategory": "Race Points Unknown",
+      "race_points": "#",
+      "size": "Wayangs are Small creatures and thus gain a +1 size bonus to their AC, a +1 size bonus on attack rolls , a –1 penalty on their CMB and to CMD , and a +4 size bonus on Stealth checks.",
+      "speed": "Wayangs have a base speed of 20 feet.",
+      "ability_score_plus": "",
+      "ability_bonus_summary": "+2 Dex, +2 Int, -2 Wis"
+    },
+    "wyrwood": {
+      "key": "wyrwood",
+      "name": "Wyrwood",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Small (0 RP)",
+      "speed": "Normal (0 RP)",
+      "ability_score_plus": null,
+      "ability_bonus_summary": "+2 Dex, +2 Int, -2 Cha"
+    },
+    "wyvaran": {
+      "key": "wyvaran",
+      "name": "Wyvaran",
+      "category": "Advanced Races (11-20 Race Points)",
+      "subcategory": "11-20",
+      "race_points": 20,
+      "size": "Medium",
+      "speed": "30 ft., fly 30 ft. (clumsy)",
+      "ability_score_plus": "+Dex, +Wis",
+      "ability_bonus_summary": "+Dex, +Wis / -Int"
+    }
+  },
+  "bab_tables": {
+    "bab_section_1": {
+      "1": "+1",
+      "2": "+2",
+      "3": "+3",
+      "4": "+4",
+      "5": "+5",
+      "6": "+6/+1",
+      "7": "+7/+2",
+      "8": "+8/+3",
+      "9": "+9/+4",
+      "10": "+10/+5",
+      "11": "+11/+6/+1",
+      "12": "+12/+7/+2",
+      "13": "+13/+8/+3",
+      "14": "+14/+9/+4",
+      "15": "+15/+10/+5",
+      "16": "+16/+11/+6/+1",
+      "17": "+17/+12/+7/+2",
+      "18": "+18/+13/+8/+3",
+      "19": "+19/+14/+9/+4",
+      "20": "+20/+15/+10/+5"
+    },
+    "bab_section_2": {
+      "1": "+0",
+      "2": "+1",
+      "3": "+2",
+      "4": "+3",
+      "5": "+3",
+      "6": "+4",
+      "7": "+5",
+      "8": "+6/+1",
+      "9": "+6/+1",
+      "10": "+7/+2",
+      "11": "+8/+3",
+      "12": "+9/+4",
+      "13": "+9/+4",
+      "14": "+10/+5",
+      "15": "+11/+6/+1",
+      "16": "+12/+7/+2",
+      "17": "+12/+7/+2",
+      "18": "+13/+8/+3",
+      "19": "+14/+9/+4",
+      "20": "+15/+10/+5"
+    },
+    "bab_section_3": {
+      "1": "+0",
+      "2": "+1",
+      "3": "+1",
+      "4": "+2",
+      "5": "+2",
+      "6": "+3",
+      "7": "+3",
+      "8": "+4",
+      "9": "+4",
+      "10": "+5",
+      "11": "+5",
+      "12": "+6/+1",
+      "13": "+6/+1",
+      "14": "+7/+2",
+      "15": "+7/+2",
+      "16": "+8/+3",
+      "17": "+8/+3",
+      "18": "+9/+4",
+      "19": "+9/+4",
+      "20": "+10/+5"
+    }
+  },
+  "level_progression": {
+    "table": [
+      {
+        "level": 0,
+        "xp": 0,
+        "failsafe": 0
+      },
+      {
+        "level": 1,
+        "xp": 0,
+        "failsafe": 1
+      },
+      {
+        "level": 2,
+        "xp": 1300,
+        "failsafe": 2
+      },
+      {
+        "level": 3,
+        "xp": 3300,
+        "failsafe": 3
+      },
+      {
+        "level": 4,
+        "xp": 6000,
+        "failsafe": 4
+      },
+      {
+        "level": 5,
+        "xp": 10000,
+        "failsafe": 5
+      },
+      {
+        "level": 6,
+        "xp": 15000,
+        "failsafe": 6
+      },
+      {
+        "level": 7,
+        "xp": 23000,
+        "failsafe": 7
+      },
+      {
+        "level": 8,
+        "xp": 34000,
+        "failsafe": 8
+      },
+      {
+        "level": 9,
+        "xp": 50000,
+        "failsafe": 9
+      },
+      {
+        "level": 10,
+        "xp": 71000,
+        "failsafe": 10
+      },
+      {
+        "level": 11,
+        "xp": 105000,
+        "failsafe": 11
+      },
+      {
+        "level": 12,
+        "xp": 145000,
+        "failsafe": 12
+      },
+      {
+        "level": 13,
+        "xp": 210000,
+        "failsafe": 13
+      },
+      {
+        "level": 14,
+        "xp": 295000,
+        "failsafe": 14
+      },
+      {
+        "level": 15,
+        "xp": 425000,
+        "failsafe": 15
+      },
+      {
+        "level": 16,
+        "xp": 600000,
+        "failsafe": 16
+      },
+      {
+        "level": 17,
+        "xp": 850000,
+        "failsafe": 17
+      },
+      {
+        "level": 18,
+        "xp": 1200000,
+        "failsafe": 18
+      },
+      {
+        "level": 19,
+        "xp": 1700000,
+        "failsafe": 19
+      },
+      {
+        "level": 20,
+        "xp": 2400000,
+        "failsafe": 20
+      }
+    ],
+    "thresholds": {
+      "0": 0,
+      "1": 0,
+      "2": 1300,
+      "3": 3300,
+      "4": 6000,
+      "5": 10000,
+      "6": 15000,
+      "7": 23000,
+      "8": 34000,
+      "9": 50000,
+      "10": 71000,
+      "11": 105000,
+      "12": 145000,
+      "13": 210000,
+      "14": 295000,
+      "15": 425000,
+      "16": 600000,
+      "17": 850000,
+      "18": 1200000,
+      "19": 1700000,
+      "20": 2400000
+    },
+    "failsafes": {}
+  },
+  "save_items": [
+    {
+      "name": "Cloak of Resistance +1",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 1,
+      "weight": 1.0,
+      "slot": "Shoulders",
+      "cost": "1,000 gp",
+      "description": "Flecks of silver or gold weave through this heavy cloak. It grants a +1 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Cloak of Resistance +2",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 2,
+      "weight": 1.0,
+      "slot": "Shoulders",
+      "cost": "4,000 gp",
+      "description": "Grants a +2 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Cloak of Resistance +3",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 3,
+      "weight": 1.0,
+      "slot": "Shoulders",
+      "cost": "9,000 gp",
+      "description": "Grants a +3 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Cloak of Resistance +4",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 4,
+      "weight": 1.0,
+      "slot": "Shoulders",
+      "cost": "16,000 gp",
+      "description": "Grants a +4 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Cloak of Resistance +5",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 5,
+      "weight": 1.0,
+      "slot": "Shoulders",
+      "cost": "25,000 gp",
+      "description": "Grants a +5 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Vest of Resistance +1",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 1,
+      "weight": 1.0,
+      "slot": "Chest",
+      "cost": "1,000 gp",
+      "description": "Grants a +1 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Vest of Resistance +2",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 2,
+      "weight": 1.0,
+      "slot": "Chest",
+      "cost": "4,000 gp",
+      "description": "Grants a +2 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Vest of Resistance +3",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 3,
+      "weight": 1.0,
+      "slot": "Chest",
+      "cost": "9,000 gp",
+      "description": "Grants a +3 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Vest of Resistance +4",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 4,
+      "weight": 1.0,
+      "slot": "Chest",
+      "cost": "16,000 gp",
+      "description": "Grants a +4 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Vest of Resistance +5",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 5,
+      "weight": 1.0,
+      "slot": "Chest",
+      "cost": "25,000 gp",
+      "description": "Grants a +5 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Ring of Resistance +1",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 1,
+      "weight": 0.0,
+      "slot": "Ring",
+      "cost": "1,500 gp",
+      "description": "A magical ring granting a +1 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Ring of Resistance +2",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 2,
+      "weight": 0.0,
+      "slot": "Ring",
+      "cost": "6,000 gp",
+      "description": "A magical ring granting a +2 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Ring of Resistance +3",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 3,
+      "weight": 0.0,
+      "slot": "Ring",
+      "cost": "13,500 gp",
+      "description": "A magical ring granting a +3 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Ring of Resistance +4",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 4,
+      "weight": 0.0,
+      "slot": "Ring",
+      "cost": "24,000 gp",
+      "description": "A magical ring granting a +4 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Ring of Resistance +5",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 5,
+      "weight": 0.0,
+      "slot": "Ring",
+      "cost": "37,500 gp",
+      "description": "A magical ring granting a +5 resistance bonus on all saving throws."
+    },
+    {
+      "name": "Stone of Good Luck (Luckstone)",
+      "target": "all",
+      "type": "luck",
+      "bonus": 1,
+      "weight": 0.0,
+      "slot": "None",
+      "cost": "20,000 gp",
+      "description": "This small bit of agate grants its bearer a +1 luck bonus on saving throws, ability checks, and skill checks."
+    },
+    {
+      "name": "Four-Leaf Clover",
+      "target": "all",
+      "type": "luck",
+      "bonus": 2,
+      "weight": 0.0,
+      "slot": "None",
+      "cost": "3,750 gp",
+      "description": "Grants a +2 luck bonus on saving throws, ability checks, or skill checks (up to 3 times per day)."
+    },
+    {
+      "name": "Fortifying Stone",
+      "target": "all",
+      "type": "resistance",
+      "bonus": 1,
+      "weight": 0.0,
+      "slot": "None",
+      "cost": "1,000 gp",
+      "description": "An enchanted stone granting a +1 resistance bonus on saving throws."
+    },
+    {
+      "name": "Shawl of Life-Keeping",
+      "target": "fort",
+      "type": "resistance",
+      "bonus": 2,
+      "weight": 1.0,
+      "slot": "Shoulders",
+      "cost": "1,000 gp",
+      "description": "Grants a +2 resistance bonus on Fortitude saving throws against death effects."
+    },
+    {
+      "name": "Periapt of Proof against Poison",
+      "target": "fort",
+      "type": "misc",
+      "bonus": 4,
+      "weight": 0.0,
+      "slot": "Neck",
+      "cost": "27,000 gp",
+      "description": "This brilliant blue gem grants a +4 bonus on Fortitude saves against poison."
+    },
+    {
+      "name": "Periapt of Health",
+      "target": "fort",
+      "type": "misc",
+      "bonus": 4,
+      "weight": 0.0,
+      "slot": "Neck",
+      "cost": "7,500 gp",
+      "description": "Grants complete immunity to disease and +4 on bodily Fortitude resilience checks."
+    },
+    {
+      "name": "Boots of the Cat",
+      "target": "ref",
+      "type": "misc",
+      "bonus": 2,
+      "weight": 1.0,
+      "slot": "Feet",
+      "cost": "1,000 gp",
+      "description": "Soft gray leather boots that grant a +2 bonus on Acrobatics and Reflex saving throws against trip or falling hazards."
+    },
+    {
+      "name": "Boots of Friendly Terrain",
+      "target": "ref",
+      "type": "insight",
+      "bonus": 2,
+      "weight": 1.0,
+      "slot": "Feet",
+      "cost": "2,400 gp",
+      "description": "Grants a +2 insight bonus on initiative and Reflex saves in favored terrain."
+    },
+    {
+      "name": "Cap of the Free Thinker",
+      "target": "will",
+      "type": "misc",
+      "bonus": 2,
+      "weight": 0.0,
+      "slot": "Head",
+      "cost": "11,000 gp",
+      "description": "A stylish brimmed hat granting a +2 bonus and roll-twice advantage on Will saves against mind-affecting effects."
+    },
+    {
+      "name": "Amulet of the Planes",
+      "target": "will",
+      "type": "misc",
+      "bonus": 2,
+      "weight": 0.0,
+      "slot": "Neck",
+      "cost": "120,000 gp",
+      "description": "A circular medallion providing mental defense and +2 on Will saving throws against extraplanar powers."
+    },
+    {
+      "name": "Bracers of Steadfast Resilience",
+      "target": "fort",
+      "type": "resistance",
+      "bonus": 2,
+      "weight": 1.0,
+      "slot": "Wrists",
+      "cost": "5,000 gp",
+      "description": "Sturdy steel bracers providing a +2 resistance bonus on Fortitude saves."
+    },
+    {
+      "name": "Band of the Stalwart Warrior",
+      "target": "fort",
+      "type": "morale",
+      "bonus": 2,
+      "weight": 0.0,
+      "slot": "Headband",
+      "cost": "4,000 gp",
+      "description": "Grants a +2 morale bonus on Fortitude saving throws against fatigue, exhaustion, and despair."
+    },
+    {
+      "name": "Brooch of Shielding",
+      "target": "all",
+      "type": "misc",
+      "bonus": 1,
+      "weight": 0.0,
+      "slot": "Neck",
+      "cost": "1,500 gp",
+      "description": "Fastens a cloak and absorbs magical force, granting a +1 bonus on saving throws against harmful spells."
+    },
+    {
+      "name": "Medallion of Courage",
+      "target": "will",
+      "type": "morale",
+      "bonus": 2,
+      "weight": 0.0,
+      "slot": "Neck",
+      "cost": "6,000 gp",
+      "description": "A shining gold medallion that confers a +2 morale bonus on Will saving throws against fear and despair."
+    },
+    {
+      "name": "All-Tool (Alchemical)",
+      "target": "all",
+      "type": "misc",
+      "bonus": 1,
+      "weight": 1.0,
+      "slot": "None",
+      "cost": "500 gp",
+      "description": "An alchemically treated item aiding in bodily and magical resistance (+1 all saves)."
+    }
+  ],
+  "ranks": [
+    "Aday",
+    "Üye",
+    "Kıdemli",
+    "Uzman"
+  ],
+  "roles": [
+    "User",
+    "Journalist",
+    "GM",
+    "Bailiff",
+    "Admin"
+  ]
+}

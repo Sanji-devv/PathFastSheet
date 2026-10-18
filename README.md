@@ -49,6 +49,8 @@ All character statistics are calculated dynamically, stored in local JSON files,
 - 📄 **Official Paizo PDF Generation:**
   - Populates all fields, attacks, inventory, skills, and special abilities onto the official interactive fillable Paizo PDF template.
   - Supports instant browser preview (inline) and one-click file download.
+- 📥 **Filled PDF Import:**
+  - Reads Pathfinder AcroForm PDFs and transfers character statistics, skills, equipment, feats, and spells into the editor.
 - 💾 **Local JSON Persistence:**
   - Save characters locally in `characters/*.json` with offline readiness, export, and import.
 
@@ -131,6 +133,7 @@ The internal HTTP server exposes the following REST endpoints:
 | `GET` | `/api/characters` | Lists all saved characters | — |
 | `GET` | `/api/load-character?file=<name>` | Loads character JSON data | Query: `file=Character_Name.json` |
 | `POST` | `/api/save-character` | Saves character to local JSON | `{ filename: "...", data: {...} }` |
+| `POST` | `/api/import-pdf` | Imports a filled Pathfinder PDF into character data | Multipart form field: `pdf` |
 | `POST` | `/api/generate-pdf` | Generates official PDF attachment | Character JSON payload |
 | `POST` | `/api/preview-pdf` | Renders official PDF for inline browser viewing | Character JSON payload |
 | `POST` | `/api/calculate-abilities` | Resolves ability scores, feats, and special abilities | Character JSON payload |

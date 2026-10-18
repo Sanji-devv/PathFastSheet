@@ -1168,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function populateWeaponsFromData(weapons) {
-    if (!weapons || !Array.isArray(weapons) || weapons.length === 0) return;
+    if (!Array.isArray(weapons)) return;
     const container = document.getElementById('weaponsContainer');
     if (!container) return;
     container.innerHTML = '';
@@ -1703,7 +1703,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function populateGearFromData(gear) {
-    if (!gear || !Array.isArray(gear) || gear.length === 0) return;
+    if (!Array.isArray(gear)) return;
     const container = document.getElementById('gearItemsContainer');
     if (!container) return;
     container.innerHTML = '';
@@ -2038,11 +2038,129 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  let activeSpellCircle = 0;
+  const spellCirclesData = {
+    0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: []
+  };
+
+  const circleNames = {
+    0: 'Circle 0 (Orisons / Cantrips)',
+    1: '1st Circle Spells',
+    2: '2nd Circle Spells',
+    3: '3rd Circle Spells',
+    4: '4th Circle Spells',
+    5: '5th Circle Spells',
+    6: '6th Circle Spells',
+    7: '7th Circle Spells',
+    8: '8th Circle Spells',
+    9: '9th Circle Spells'
+  };
+
+  function renderActiveSpellCircle() {
+    const listEl = document.getElementById('activeCircleSpellsList');
+    const titleEl = document.getElementById('activeCircleTitle');
+    if (!listEl) return;
+    if (titleEl) {
+      titleEl.textContent = circleNames[activeSpellCircle] || `Circle ${activeSpellCircle}`;
+    }
+    const spells = spellCirclesData[activeSpellCircle] || [];
+    listEl.innerHTML = '';
+    if (spells.length === 0) {
+      listEl.innerHTML = '<div class="text-body-secondary small text-center py-2 fst-italic">No spells added in this circle yet. Click "+ Add Spell" above.</div>';
+      return;
+    }
+
+    spells.forEach((spName, sIdx) => {
+      const row = document.createElement('div');
+      row.className = 'd-flex align-items-center gap-1_5 py-0_5';
+      row.innerHTML = `
+        <span class="badge bg-label-warning font-monospace" style="min-width: 24px; font-size: 0.7rem;">${sIdx + 1}</span>
+        <input type="text" class="form-control form-control-sm pf-box-input px-2 spell-item-input" value="${escapeHtml(spName)}" placeholder="Spell name..." />
+        <button type="button" class="btn btn-xs btn-icon btn-text-danger btn-del-spell" title="Remove Spell">
+          <i class="icon-base ti tabler-x"></i>
+        </button>
+      `;
+
+      const inp = row.querySelector('.spell-item-input');
+      inp.addEventListener('input', (e) => {
+        spellCirclesData[activeSpellCircle][sIdx] = e.target.value.trim();
+        triggerAutoSave();
+      });
+
+      row.querySelector('.btn-del-spell').addEventListener('click', () => {
+        spellCirclesData[activeSpellCircle].splice(sIdx, 1);
+        renderActiveSpellCircle();
+        triggerAutoSave();
+      });
+
+      listEl.appendChild(row);
+    });
+  }
+
+  function initSpellCirclesUI() {
+    const tabs = document.querySelectorAll('#spellCircleTabs button');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => {
+          b.classList.remove('active', 'btn-outline-warning');
+          b.classList.add('btn-outline-secondary');
+        });
+        btn.classList.add('active', 'btn-outline-warning');
+        btn.classList.remove('btn-outline-secondary');
+        activeSpellCircle = parseInt(btn.getAttribute('data-circle'), 10) || 0;
+        renderActiveSpellCircle();
+      });
+    });
+
+    const addBtn = document.getElementById('btnAddSpellToCircle');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        if (!Array.isArray(spellCirclesData[activeSpellCircle])) {
+          spellCirclesData[activeSpellCircle] = [];
+        }
+        spellCirclesData[activeSpellCircle].push('');
+        renderActiveSpellCircle();
+        const inputs = document.querySelectorAll('#activeCircleSpellsList .spell-item-input');
+        if (inputs.length > 0) {
+          inputs[inputs.length - 1].focus();
+        }
+        triggerAutoSave();
+      });
+    }
+  }
+
   function populateSpellsFromData(spells) {
     if (!spells) return;
-    if (spells.spellNotes && document.getElementById('sheetSpellNotes')) {
+    if (spells.spellNotes !== undefined && document.getElementById('sheetSpellNotes')) {
       document.getElementById('sheetSpellNotes').value = spells.spellNotes;
     }
+    if (spells.castingStat && document.getElementById('sheetCastingStat')) {
+      document.getElementById('sheetCastingStat').value = spells.castingStat;
+    }
+
+    if (spells.levels && typeof spells.levels === 'object') {
+      for (let lvl = 0; lvl <= 9; lvl++) {
+        const lvlInfo = spells.levels[String(lvl)] || spells.levels[lvl];
+        if (lvlInfo) {
+          if (Array.isArray(lvlInfo.spells)) {
+            spellCirclesData[lvl] = [...lvlInfo.spells];
+          }
+          const row = document.getElementById(`spellRow_${lvl}`);
+          if (row) {
+            const dcVal = row.querySelector('.spell-dc-val');
+            if (dcVal && lvlInfo.dc !== undefined) dcVal.textContent = lvlInfo.dc;
+            const perDay = row.querySelector('.spell-per-day');
+            if (perDay && lvlInfo.per_day !== undefined && lvlInfo.per_day !== null) perDay.value = lvlInfo.per_day;
+            const bonus = row.querySelector('.spell-bonus-val');
+            if (bonus && lvlInfo.bonus !== undefined && lvlInfo.bonus !== null) bonus.textContent = lvlInfo.bonus;
+            const known = row.querySelector('.spell-known-val');
+            if (known && lvlInfo.known !== undefined && lvlInfo.known !== null) known.textContent = lvlInfo.known;
+          }
+        }
+      }
+      renderActiveSpellCircle();
+    }
+
     if (Array.isArray(spells.slots)) {
       const rows = document.querySelectorAll('#paneSpells table tbody tr, #tab-page2 table tbody tr');
       spells.slots.forEach(slot => {
@@ -3658,7 +3776,145 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  const btnToggleDiceDrawer = document.getElementById('btnToggleDiceDrawer');
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // PDF IMPORT — Drag & Drop AcroForm extraction
+  // ─────────────────────────────────────────────────────────────────────────
+  (function initPdfImport() {
+    const btnOpenModal = document.getElementById('btn-import-pdf');
+    const dropZone     = document.getElementById('pdfImportDropZone');
+    const fileInp      = document.getElementById('pdfImportInput');
+    const progressEl   = document.getElementById('pdfImportProgress');
+    const resultEl     = document.getElementById('pdfImportResult');
+    const successEl    = document.getElementById('pdfImportSuccess');
+    const errorEl      = document.getElementById('pdfImportError');
+    const charNameEl   = document.getElementById('pdfImportCharName');
+    const fieldCountEl = document.getElementById('pdfImportFieldCount');
+    const errorMsgEl   = document.getElementById('pdfImportErrorMsg');
+    const applyBtn     = document.getElementById('btnApplyImportedPdf');
+    const dropLabel    = document.getElementById('pdfImportDropLabel');
+
+    if (!btnOpenModal) return;
+
+    let importedCharData = null;
+    const modalEl = document.getElementById('modalImportPdf');
+    const bsModal = modalEl ? new bootstrap.Modal(modalEl) : null;
+
+    if (modalEl) {
+      modalEl.addEventListener('show.bs.modal', () => {
+        importedCharData = null;
+        if (progressEl) progressEl.style.display = 'none';
+        if (resultEl)   resultEl.style.display   = 'none';
+        if (successEl)  successEl.style.display  = '';
+        if (errorEl)    errorEl.style.cssText     = 'display:none !important';
+        if (applyBtn)   applyBtn.style.display    = 'none';
+        if (dropLabel)  dropLabel.textContent     = 'Drag & drop a filled Pathfinder PDF here';
+        if (dropZone) {
+          dropZone.style.borderColor = 'rgba(255,69,96,0.45)';
+          dropZone.style.background  = 'rgba(255,69,96,0.04)';
+        }
+        if (fileInp) fileInp.value = '';
+      });
+    }
+
+    btnOpenModal.addEventListener('click', () => bsModal && bsModal.show());
+
+    if (dropZone && fileInp) {
+      dropZone.addEventListener('click', () => fileInp.click());
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'rgba(255,69,96,0.9)';
+        dropZone.style.background  = 'rgba(255,69,96,0.10)';
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = 'rgba(255,69,96,0.45)';
+        dropZone.style.background  = 'rgba(255,69,96,0.04)';
+      });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'rgba(255,69,96,0.45)';
+        dropZone.style.background  = 'rgba(255,69,96,0.04)';
+        const f = e.dataTransfer.files[0];
+        if (f) handlePdfFile(f);
+      });
+    }
+
+    if (fileInp) {
+      fileInp.addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) handlePdfFile(f);
+      });
+    }
+
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => {
+        if (!importedCharData) return;
+        populateSheetFromData(importedCharData);
+        if (bsModal) bsModal.hide();
+        showToast('PDF karakter sayfasi basariyla yuklendi!', 'success');
+      });
+    }
+
+    async function handlePdfFile(file) {
+      if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+        showToast('Lutfen gecerli bir PDF dosyasi secin.', 'danger');
+        return;
+      }
+      if (progressEl) progressEl.style.display = '';
+      if (resultEl)   resultEl.style.display   = 'none';
+      if (applyBtn)   applyBtn.style.display   = 'none';
+      if (dropLabel)  dropLabel.textContent     = file.name;
+
+      try {
+        const formData = new FormData();
+        formData.append('pdf', file, file.name);
+        const resp = await fetch('/api/import-pdf', { method: 'POST', body: formData });
+
+        if (progressEl) progressEl.style.display = 'none';
+        if (resultEl)   resultEl.style.display   = '';
+
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({ error: 'Sunucu hatasi' }));
+          showImportError(err.error || 'Sunucu hatasi olustu.');
+          return;
+        }
+
+        const json = await resp.json();
+        if (json.status !== 'ok' || !json.character) {
+          showImportError(json.error || 'PDF parse edilemedi.');
+          return;
+        }
+
+        importedCharData = json.character;
+        const basicCount = Object.keys(importedCharData.basic  || {}).length;
+        const skillCount = (importedCharData.skills || []).length;
+        const fieldCount = Number.isFinite(importedCharData.field_count)
+          ? importedCharData.field_count
+          : basicCount + skillCount;
+        const charName   = (importedCharData.basic  || {})['in-name'] || 'Bilinmeyen Karakter';
+
+        if (charNameEl)   charNameEl.textContent   = charName;
+        if (fieldCountEl) fieldCountEl.textContent = `${fieldCount} alan okundu (${basicCount} temel, ${skillCount} beceri ve diğer veriler)`;
+        if (successEl)    successEl.style.display  = '';
+        if (errorEl)      errorEl.style.cssText     = 'display:none !important';
+        if (applyBtn)     applyBtn.style.display   = '';
+
+      } catch (err) {
+        if (progressEl) progressEl.style.display = 'none';
+        if (resultEl)   resultEl.style.display   = '';
+        showImportError('Baglanti hatasi: ' + err.message);
+      }
+    }
+
+    function showImportError(msg) {
+      if (successEl)  successEl.style.display = 'none';
+      if (errorEl)    errorEl.style.cssText   = '';
+      if (errorMsgEl) errorMsgEl.textContent  = msg;
+      if (applyBtn)   applyBtn.style.display  = 'none';
+    }
+  })();
+
+    const btnToggleDiceDrawer = document.getElementById('btnToggleDiceDrawer');
   const btnCloseDiceDrawer = document.getElementById('btnCloseDiceDrawer');
   if (btnToggleDiceDrawer) {
     btnToggleDiceDrawer.addEventListener('click', () => {
@@ -4265,6 +4521,17 @@ document.addEventListener('DOMContentLoaded', function () {
         'in-cha': parseInt(document.getElementById('score_cha')?.value, 10) || 10,
         'in-bab': document.getElementById('sheetBabInput')?.value || '+1',
         'in-ac': parseInt(document.getElementById('sheetAcTotal')?.textContent, 10) || 10,
+        'in-ac-armor': document.getElementById('sheetAcArmor')?.value || '',
+        'in-ac-shield': document.getElementById('sheetAcShield')?.value || '',
+        'in-ac-touch': parseInt(document.getElementById('sheetAcTouch')?.textContent, 10) || 10,
+        'in-ac-flat': parseInt(document.getElementById('sheetAcFlat')?.textContent, 10) || 10,
+        'in-ac-deflection': parseInt(document.getElementById('sheetAcDeflect')?.value, 10) || 0,
+        'in-ac-natural': parseInt(document.getElementById('sheetAcNatural')?.value, 10) || 0,
+        'in-ac-misc': parseInt(document.getElementById('sheetAcMisc')?.value, 10) || 0,
+        'in-ac-check-penalty': document.getElementById('acItemTotalPen')?.textContent || '',
+        'in-spell-class': currentChar?.className || '',
+        'in-spell-cl': currentChar?.level || level,
+        'in-spells-data': JSON.stringify(currentChar?.sheetData?.spells || {}),
         'in-hp': parseInt(document.getElementById('sheetMaxHp')?.value, 10) || 12,
         'in-speed': parseInt(document.getElementById('sheetSpeedBase')?.value, 10) || 30,
         'in-fort': parseInt(document.getElementById('saveTotal_fort')?.textContent, 10) || 0,
@@ -4300,6 +4567,8 @@ document.addEventListener('DOMContentLoaded', function () {
         ac_items: currentChar?.sheetData?.acItems || [],
         gear: currentChar?.sheetData?.gear || [],
         feats: currentChar?.sheetData?.feats || [],
+        specials: currentChar?.sheetData?.specials || [],
+        spells: currentChar?.sheetData?.spells || {},
         save_items: currentChar?.sheetData?.saveItems || [],
         skills: skillsObj
       }
@@ -4355,61 +4624,283 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  let currentAppUser = { id: 'guest', username: 'Guest', is_guest: true };
+
+  function updateAppUserUI(user) {
+    if (!user) return;
+    currentAppUser = user;
+    const nameLabel = document.getElementById('lblCurrentUserName');
+    if (nameLabel) {
+      nameLabel.textContent = user.username;
+    }
+    const authModalName = document.getElementById('authModalCurrentUsername');
+    if (authModalName) {
+      authModalName.textContent = user.username;
+    }
+    const authModalBadge = document.getElementById('authModalUserBadge');
+    if (authModalBadge) {
+      authModalBadge.textContent = user.is_guest ? 'Guest Session' : 'Registered Vault';
+      authModalBadge.className = user.is_guest ? 'badge bg-label-warning font-monospace py-1 px-2' : 'badge bg-label-success font-monospace py-1 px-2';
+    }
+    const charVaultUser = document.getElementById('charModalVaultUser');
+    if (charVaultUser) {
+      charVaultUser.textContent = user.username;
+    }
+    const logoutBtn = document.getElementById('btnLogoutUser');
+    if (logoutBtn) {
+      logoutBtn.style.display = user.is_guest ? 'none' : '';
+    }
+  }
+
+  function initUserAuth() {
+    fetch('/api/auth/me')
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'ok' && data.user) {
+          updateAppUserUI(data.user);
+        }
+      })
+      .catch(console.warn);
+
+    const btnUserModal = document.getElementById('btn-user-modal');
+    if (btnUserModal) {
+      btnUserModal.addEventListener('click', () => {
+        const modalEl = document.getElementById('modalUserAuth');
+        if (modalEl && window.bootstrap) {
+          const m = new bootstrap.Modal(modalEl);
+          m.show();
+        }
+      });
+    }
+
+    const btnSwitchAccount = document.getElementById('btnSwitchAccountFromChar');
+    if (btnSwitchAccount) {
+      btnSwitchAccount.addEventListener('click', () => {
+        const charModal = document.getElementById('modalCharacters');
+        if (charModal && window.bootstrap) {
+          const m1 = bootstrap.Modal.getInstance(charModal);
+          if (m1) m1.hide();
+        }
+        const authModal = document.getElementById('modalUserAuth');
+        if (authModal && window.bootstrap) {
+          const m2 = new bootstrap.Modal(authModal);
+          m2.show();
+        }
+      });
+    }
+
+    const formLogin = document.getElementById('formLogin');
+    if (formLogin) {
+      formLogin.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const u = document.getElementById('loginUsername')?.value.trim();
+        const p = document.getElementById('loginPassword')?.value.trim();
+        const errEl = document.getElementById('loginErrorAlert');
+        if (errEl) errEl.classList.add('d-none');
+
+        fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        })
+        .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+        .then(({ ok, data }) => {
+          if (!ok || data.error) {
+            if (errEl) {
+              errEl.textContent = data.error || 'Login failed';
+              errEl.classList.remove('d-none');
+            }
+            return;
+          }
+          updateAppUserUI(data.user);
+          showToast(`Welcome back, ${data.user.username}! Private vault unlocked.`, 'success');
+          const authModal = document.getElementById('modalUserAuth');
+          if (authModal && window.bootstrap) {
+            const m = bootstrap.Modal.getInstance(authModal);
+            if (m) m.hide();
+          }
+          loadCharactersList();
+        })
+        .catch(err => {
+          if (errEl) {
+            errEl.textContent = 'Connection error: ' + err.message;
+            errEl.classList.remove('d-none');
+          }
+        });
+      });
+    }
+
+    const formReg = document.getElementById('formRegister');
+    if (formReg) {
+      formReg.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const u = document.getElementById('regUsername')?.value.trim();
+        const p = document.getElementById('regPassword')?.value.trim();
+        const pConf = document.getElementById('regPasswordConfirm')?.value.trim();
+        const errEl = document.getElementById('regErrorAlert');
+        if (errEl) errEl.classList.add('d-none');
+
+        if (p !== pConf) {
+          if (errEl) {
+            errEl.textContent = 'Passwords do not match';
+            errEl.classList.remove('d-none');
+          }
+          return;
+        }
+
+        fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        })
+        .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+        .then(({ ok, data }) => {
+          if (!ok || data.error) {
+            if (errEl) {
+              errEl.textContent = data.error || 'Registration failed';
+              errEl.classList.remove('d-none');
+            }
+            return;
+          }
+          updateAppUserUI(data.user);
+          showToast(`Account created! Private vault ready for ${data.user.username}.`, 'success');
+          const authModal = document.getElementById('modalUserAuth');
+          if (authModal && window.bootstrap) {
+            const m = bootstrap.Modal.getInstance(authModal);
+            if (m) m.hide();
+          }
+          loadCharactersList();
+        })
+        .catch(err => {
+          if (errEl) {
+            errEl.textContent = 'Connection error: ' + err.message;
+            errEl.classList.remove('d-none');
+          }
+        });
+      });
+    }
+
+    const btnLogout = document.getElementById('btnLogoutUser');
+    if (btnLogout) {
+      btnLogout.addEventListener('click', () => {
+        fetch('/api/auth/logout', { method: 'POST' })
+          .then(r => r.json())
+          .then(() => {
+            showToast('Logged out. Switched to Guest session.', 'info');
+            fetch('/api/auth/me')
+              .then(r => r.json())
+              .then(d => {
+                updateAppUserUI(d.user || { id: 'guest', username: 'Guest', is_guest: true });
+                const authModal = document.getElementById('modalUserAuth');
+                if (authModal && window.bootstrap) {
+                  const m = bootstrap.Modal.getInstance(authModal);
+                  if (m) m.hide();
+                }
+                loadCharactersList();
+              });
+          })
+          .catch(console.warn);
+      });
+    }
+  }
+
   function loadCharactersList() {
     const container = document.getElementById('characters-list-container');
+    const tplContainer = document.getElementById('templates-list-container');
     if (!container) return;
-    container.innerHTML = '<div class="text-center py-3 text-body-secondary"><span class="spinner-border spinner-border-sm me-2"></span>Loading character sheets...</div>';
+    container.innerHTML = '<div class="text-center py-3 text-body-secondary"><span class="spinner-border spinner-border-sm me-2"></span>Loading private sheets...</div>';
 
     fetch('/api/characters')
       .then(r => r.json())
       .then(data => {
-        const serverChars = data.characters || [];
-        const localChars = getCharacters();
+        const list = data.characters || [];
+        const templates = data.templates || [];
 
-        const map = new Map();
-        serverChars.forEach(c => map.set(c.name, c));
-        localChars.forEach(c => {
-          if (!map.has(c.name)) {
-            map.set(c.name, {
-              name: c.name,
-              class: c.className || c.class || 'Unknown',
-              level: c.level || 1,
-              filename: (c.name || 'char').replace(/[^\w\-_\. ]/g, '_').trim().replace(/\s+/g, '_') + '.json'
-            });
-          }
-        });
-
-        const list = Array.from(map.values());
         if (list.length === 0) {
-          container.innerHTML = '<div class="text-center py-4 text-body-secondary">No saved characters found. Click "+ New Character" to create one.</div>';
-          return;
-        }
-
-        container.innerHTML = '';
-        list.forEach(c => {
-          const item = document.createElement('div');
-          item.className = 'p-2_5 rounded border bg-body d-flex align-items-center justify-content-between flex-wrap gap-2';
-          item.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-              <span class="avatar avatar-sm rounded bg-label-primary d-flex align-items-center justify-content-center">
-                <i class="icon-base ti tabler-user fs-5"></i>
-              </span>
-              <div>
-                <strong class="text-heading d-block small">${escapeHtml(c.name)}</strong>
-                <small class="text-body-secondary font-monospace">${escapeHtml(c.class || 'Paladin')} • Level ${c.level || 1}</small>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 btn-load-char" data-name="${escapeHtml(c.name)}" data-file="${escapeHtml(c.filename || '')}">
-                <i class="icon-base ti tabler-folder-open me-1"></i> Load
-              </button>
-              <button type="button" class="btn btn-sm btn-icon btn-text-danger btn-del-char" data-name="${escapeHtml(c.name)}" data-file="${escapeHtml(c.filename || '')}" title="Delete Character">
-                <i class="icon-base ti tabler-trash fs-5"></i>
-              </button>
+          container.innerHTML = `
+            <div class="text-center py-4 text-body-secondary">
+              <i class="ti tabler-folder-off fs-3 d-block mb-1 opacity-50"></i>
+              No saved characters in this vault yet.<br>
+              <span class="small">Click <strong>"+ New Sheet"</strong> or import a template below to save your characters.</span>
             </div>
           `;
-          container.appendChild(item);
-        });
+        } else {
+          container.innerHTML = '';
+          list.forEach(c => {
+            const item = document.createElement('div');
+            item.className = 'char-item-row p-2_5 rounded border bg-body d-flex align-items-center justify-content-between flex-wrap gap-2';
+            item.setAttribute('data-search-text', `${c.name} ${c.class}`.toLowerCase());
+            item.innerHTML = `
+              <div class="d-flex align-items-center gap-2">
+                <span class="avatar avatar-sm rounded bg-label-primary d-flex align-items-center justify-content-center">
+                  <i class="icon-base ti tabler-user-shield fs-5"></i>
+                </span>
+                <div>
+                  <strong class="text-heading d-block small">${escapeHtml(c.name)}</strong>
+                  <small class="text-body-secondary font-monospace">${escapeHtml(c.class || 'Paladin')} • Level ${c.level || 1} • <span class="text-success small">Private</span></small>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <button type="button" class="btn btn-xs btn-outline-primary rounded-pill px-2_5 btn-load-char" data-name="${escapeHtml(c.name)}" data-file="${escapeHtml(c.filename || '')}">
+                  <i class="icon-base ti tabler-folder-open me-1"></i> Open
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 btn-dup-char" data-name="${escapeHtml(c.name)}" data-file="${escapeHtml(c.filename || '')}" title="Duplicate / Clone">
+                  <i class="icon-base ti tabler-copy me-1"></i> Clone
+                </button>
+                <button type="button" class="btn btn-xs btn-icon btn-text-danger btn-del-char" data-name="${escapeHtml(c.name)}" data-file="${escapeHtml(c.filename || '')}" title="Delete Sheet">
+                  <i class="icon-base ti tabler-trash fs-5"></i>
+                </button>
+              </div>
+            `;
+            container.appendChild(item);
+          });
+        }
+
+        if (tplContainer) {
+          tplContainer.innerHTML = '';
+          const activeTemplates = (templates && templates.length > 0) ? templates : [{
+            name: 'Caspian Blade',
+            class: 'Omdura',
+            level: '12',
+            filename: 'Caspian_Blade.json'
+          }];
+
+          activeTemplates.forEach(t => {
+            const tItem = document.createElement('div');
+            tItem.className = 'p-2 rounded border border-warning border-opacity-25 bg-body-tertiary d-flex align-items-center justify-content-between flex-wrap gap-2';
+            tItem.innerHTML = `
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-label-warning font-monospace py-1 px-1_5"><i class="ti tabler-bookmark"></i></span>
+                <div>
+                  <strong class="text-warning d-block small">${escapeHtml(t.name)}</strong>
+                  <small class="text-body-secondary font-monospace">${escapeHtml(t.class)} • Level ${t.level} • Official Showcase</small>
+                </div>
+              </div>
+              <button type="button" class="btn btn-xs btn-warning rounded-pill px-3 btn-import-template" data-file="${escapeHtml(t.filename || '')}">
+                <i class="ti tabler-download me-1"></i> Copy to My Vault
+              </button>
+            `;
+            tplContainer.appendChild(tItem);
+          });
+
+          tplContainer.querySelectorAll('.btn-import-template').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const file = e.currentTarget.getAttribute('data-file');
+              fetch(`/api/load-character?file=${encodeURIComponent(file)}`)
+                .then(r => r.json())
+                .then(data => {
+                  populateSheetFromData(data);
+                  showToast(`Template "${data.name || 'Caspian Blade'}" loaded. Click "Save" to keep a copy in your private vault!`, 'success');
+                  const modalEl = document.getElementById('modalCharacters');
+                  if (modalEl && window.bootstrap) {
+                    const m = bootstrap.Modal.getInstance(modalEl);
+                    if (m) m.hide();
+                  }
+                })
+                .catch(err => showToast('Error loading template: ' + err.message, 'danger'));
+            });
+          });
+        }
 
         container.querySelectorAll('.btn-load-char').forEach(btn => {
           btn.addEventListener('click', (e) => {
@@ -4424,66 +4915,64 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         });
 
+        container.querySelectorAll('.btn-dup-char').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const name = e.currentTarget.getAttribute('data-name');
+            const file = e.currentTarget.getAttribute('data-file');
+            fetch(`/api/load-character?file=${encodeURIComponent(file)}`)
+              .then(r => r.json())
+              .then(charData => {
+                const cloneName = `${name} (Copy)`;
+                if (charData.basic) charData.basic['in-name'] = cloneName;
+                charData.name = cloneName;
+                return fetch('/api/save-character', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(charData)
+                });
+              })
+              .then(r => r.json())
+              .then(() => {
+                showToast(`Duplicated "${name}" into your vault!`, 'success');
+                loadCharactersList();
+              })
+              .catch(err => showToast('Clone failed: ' + err.message, 'danger'));
+          });
+        });
+
         container.querySelectorAll('.btn-del-char').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const name = e.currentTarget.getAttribute('data-name');
             const file = e.currentTarget.getAttribute('data-file');
-            if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+            if (!confirm(`Are you sure you want to delete "${name}" from your private vault?`)) return;
 
-            let all = getCharacters();
-            all = all.filter(x => x.name !== name);
-            saveCharacters(all);
-
-            if (file) {
-              fetch('/api/delete-character', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename: file })
-              }).catch(console.warn);
-            }
-
-            showToast(`Deleted "${name}"`, 'warning');
-            loadCharactersList();
+            fetch('/api/delete-character', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ filename: file })
+            })
+            .then(r => r.json())
+            .then(() => {
+              showToast(`Deleted "${name}"`, 'warning');
+              loadCharactersList();
+            })
+            .catch(err => showToast('Delete failed: ' + err.message, 'danger'));
           });
         });
-      })
-      .catch(() => {
-        const localChars = getCharacters();
-        container.innerHTML = '';
-        if (localChars.length === 0) {
-          container.innerHTML = '<div class="text-center py-4 text-body-secondary">No saved characters found.</div>';
-          return;
+
+        const searchInput = document.getElementById('character-search-input');
+        if (searchInput) {
+          searchInput.oninput = (e) => {
+            const q = e.target.value.toLowerCase().trim();
+            container.querySelectorAll('.char-item-row').forEach(row => {
+              const text = row.getAttribute('data-search-text') || '';
+              row.style.display = text.includes(q) ? '' : 'none';
+            });
+          };
         }
-        localChars.forEach(c => {
-          const item = document.createElement('div');
-          item.className = 'p-2_5 rounded border bg-body d-flex align-items-center justify-content-between flex-wrap gap-2';
-          item.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-              <span class="avatar avatar-sm rounded bg-label-primary d-flex align-items-center justify-content-center">
-                <i class="icon-base ti tabler-user fs-5"></i>
-              </span>
-              <div>
-                <strong class="text-heading d-block small">${escapeHtml(c.name)}</strong>
-                <small class="text-body-secondary font-monospace">${escapeHtml(c.className || c.class || 'Paladin')} • Level ${c.level || 1}</small>
-              </div>
-            </div>
-            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 btn-load-char" data-name="${escapeHtml(c.name)}">
-              <i class="icon-base ti tabler-folder-open me-1"></i> Load
-            </button>
-          `;
-          container.appendChild(item);
-        });
-        container.querySelectorAll('.btn-load-char').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const name = e.currentTarget.getAttribute('data-name');
-            loadCharacterByName(name);
-            const modalEl = document.getElementById('modalCharacters');
-            if (modalEl && window.bootstrap) {
-              const m = bootstrap.Modal.getInstance(modalEl);
-              if (m) m.hide();
-            }
-          });
-        });
+      })
+      .catch(err => {
+        container.innerHTML = `<div class="text-center py-4 text-danger">Failed to load characters: ${escapeHtml(err.message)}</div>`;
       });
   }
 
@@ -4494,7 +4983,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
           if (data && (data.sheetData || data.basic)) {
             populateSheetFromData(data);
-            showToast(`Loaded "${name}" from disk`, 'success');
+            showToast(`Loaded "${name}" from private vault`, 'success');
             return;
           }
           fallbackLocal(name);
@@ -4518,6 +5007,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!data) return;
     const loadedSheetData = data.sheetData || data;
     const basic = data.basic || {};
+    const isPdfImport = data._import_source === 'pdf';
 
     const rawCharName = data.name || basic['in-name'] || loadedSheetData.name || '';
     const charName = rawCharName !== 'Valiant Adventurer' ? rawCharName : '';
@@ -4528,13 +5018,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const topName = document.getElementById('header-character-name');
     if (topName) topName.textContent = charName;
 
-    const lvl = data.level || basic['in-level'] || loadedSheetData.level || 1;
+    const lvl = data.level || basic['in-level'] || loadedSheetData.level || currentChar.level || 1;
     const lvlEl = document.getElementById('sheetLevelInput');
     if (lvlEl) lvlEl.value = lvl;
     const lvlCounter = document.getElementById('sheetLvlCounter');
     if (lvlCounter) lvlCounter.textContent = lvl;
 
-    const classKey = data.classKey || (data.class ? String(data.class).toLowerCase() : null) || 'paladin';
+    const classKey = data.classKey || (data.class ? String(data.class).toLowerCase() : null) ||
+      (isPdfImport ? 'paladin' : currentChar.classKey || 'paladin');
     currentChar.classKey = classKey;
     currentChar.className = data.className || data.class || classKey;
     currentChar.level = parseInt(lvl, 10) || 1;
@@ -4566,6 +5057,50 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     renderMulticlassUI();
 
+    const setSheetValue = (id, key) => {
+      const el = document.getElementById(id);
+      if (el && Object.prototype.hasOwnProperty.call(loadedSheetData, key)) {
+        el.value = loadedSheetData[key] === null ? '' : loadedSheetData[key];
+      }
+    };
+    [
+      ['sheetCurrentHp', 'currentHp'],
+      ['sheetDrInput', 'dr'],
+      ['sheetNonlethalInput', 'nonlethal'],
+      ['sheetSpeedBase', 'speedBase'],
+      ['sheetSpeedArmor', 'speedArmor'],
+      ['sheetSpeedFly', 'speedFly'],
+      ['sheetSpeedSwim', 'speedSwim'],
+      ['sheetSpeedClimb', 'speedClimb'],
+      ['sheetSpeedBurrow', 'speedBurrow'],
+      ['sheetInitMisc', 'initMisc'],
+      ['sheetAcNatural', 'acNatural'],
+      ['sheetAcDeflect', 'acDeflect'],
+      ['sheetAcMisc', 'acMisc'],
+      ['sheetSrInput', 'sr'],
+      ['sheetSaveConditional', 'saveConditional'],
+      ['sheetMoneyCp', 'moneyCp'],
+      ['sheetMoneySp', 'moneySp'],
+      ['sheetMoneyGp', 'moneyGp'],
+      ['sheetMoneyPp', 'moneyPp'],
+      ['sheetCurrentXp', 'currentXp'],
+      ['sheetNextLevelXp', 'nextLevelXp'],
+      ['sheetHpExtraMisc', 'hpExtraMisc'],
+      ['sheetSkillConditional', 'skillConditional'],
+      ['sheetLanguages', 'languages']
+    ].forEach(([id, key]) => setSheetValue(id, key));
+    if (isPdfImport && !Object.prototype.hasOwnProperty.call(loadedSheetData, 'nextLevelXp')) {
+      const nextLevelXpEl = document.getElementById('sheetNextLevelXp');
+      if (nextLevelXpEl) nextLevelXpEl.value = '';
+    }
+
+    ['fort', 'ref', 'will'].forEach(key => {
+      setSheetValue(`saveBase_${key}`, `saveBase_${key}`);
+      setSheetValue(`saveAbility_${key}`, `saveAbility_${key}`);
+      setSheetValue(`saveMagic_${key}`, `saveMagic_${key}`);
+      setSheetValue(`saveMisc_${key}`, `saveMisc_${key}`);
+    });
+
     if (sData.alignment || basic['in-alignment']) document.getElementById('sheetAlignmentSelect').value = normalizeAlignment(sData.alignment || basic['in-alignment']);
     const rawPlayer = sData.player || basic['in-player'] || '';
     document.getElementById('sheetPlayerName').value = rawPlayer !== 'Valiant Adventurer' ? rawPlayer : '';
@@ -4575,12 +5110,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const resolvedGender = (sData.gender === 'Female') ? 'Female' : 'Male';
     document.getElementById('sheetGenderInput').value = resolvedGender;
     setCookie('pf_active_gender', resolvedGender, 30);
-    if (sData.age) document.getElementById('sheetAgeInput').value = sData.age;
-    if (sData.height) document.getElementById('sheetHeightInput').value = sData.height;
-    if (sData.weight || basic['in-weight']) document.getElementById('sheetWeightInput').value = sData.weight || basic['in-weight'];
-    if (sData.eyesHair || sData.hair || sData.eyes || basic['in-hair'] || basic['in-eyes']) {
+    if (isPdfImport || sData.age) document.getElementById('sheetAgeInput').value = sData.age || '';
+    if (isPdfImport || sData.height) document.getElementById('sheetHeightInput').value = sData.height || '';
+    if (isPdfImport || sData.weight || basic['in-weight']) {
+      document.getElementById('sheetWeightInput').value = sData.weight || basic['in-weight'] || '';
+    }
+    if (isPdfImport || sData.eyesHair || sData.hair || sData.eyes || basic['in-hair'] || basic['in-eyes']) {
       document.getElementById('sheetEyesHairInput').value = sData.eyesHair ||
-        [sData.hair || basic['in-hair'], sData.eyes || basic['in-eyes']].filter(Boolean).join(' / ');
+        [sData.hair || basic['in-hair'], sData.eyes || basic['in-eyes']].filter(Boolean).join(' / ') || '';
     }
     if (sData.race || basic['in-race']) document.getElementById('sheetRaceInput').value = sData.race || basic['in-race'];
 
@@ -4616,6 +5153,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderSkillsTable();
     onClassOrLevelChange();
+    if (isPdfImport) {
+      renderSkillsTable();
+      ['fort', 'ref', 'will'].forEach(key => {
+        setSheetValue(`saveBase_${key}`, `saveBase_${key}`);
+      });
+      if (!sData.spells?.castingStat) {
+        const castingStat = getCastingStatForClass(currentChar.classKey);
+        const castingStatEl = document.getElementById('sheetCastingStat');
+        if (castingStatEl) castingStatEl.value = castingStat;
+      }
+      recalculateAll();
+
+      const importedMaxHp = Number(sData.maxHp);
+      const maxHpEl = document.getElementById('sheetMaxHp');
+      const hpExtraEl = document.getElementById('sheetHpExtraMisc');
+      if (Number.isFinite(importedMaxHp) && importedMaxHp > 0 && maxHpEl && hpExtraEl) {
+        const calculatedMaxHp = parseInt(maxHpEl.value, 10) || 0;
+        const existingExtra = parseInt(hpExtraEl.value, 10) || 0;
+        sData.hpExtraMisc = existingExtra + importedMaxHp - calculatedMaxHp;
+        hpExtraEl.value = sData.hpExtraMisc;
+        recalculateAll();
+      }
+      const currentHpEl = document.getElementById('sheetCurrentHp');
+      if (currentHpEl) {
+        currentHpEl.value = sData.currentHp !== undefined
+          ? sData.currentHp
+          : (maxHpEl ? maxHpEl.value : currentHpEl.value);
+      }
+      populateSpellsFromData(sData.spells);
+    }
   }
 
   function saveAllData() {
@@ -4813,20 +5380,30 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    document.querySelectorAll('#paneSpells table tbody tr, #tab-page2 table tbody tr').forEach((tr, lvl) => {
-      const knownEl = tr.querySelector('.spell-known, .spell-known-val');
-      const known = parseInt(knownEl?.value || knownEl?.textContent, 10) || 0;
-      const perDayInput = tr.querySelector('.spell-per-day');
-      const perDay = parseInt(perDayInput?.value, 10) || 0;
-      const used = parseInt(tr.querySelector('.spell-used')?.value, 10) || 0;
-      sheetData.spells.slots.push({ lvl, known, perDay, used });
-      if (perDayInput && !perDayInput.disabled && perDayInput.value && perDayInput.value !== '—') {
-        sheetData.spells.levels[String(lvl)] = {
-          ...(sheetData.spells.levels[String(lvl)] || {}),
-          per_day: perDayInput.value
-        };
-      }
-    });
+    sheetData.spells.levels = {};
+    for (let lvl = 0; lvl <= 9; lvl++) {
+      const row = document.getElementById(`spellRow_${lvl}`);
+      const dcVal = row ? row.querySelector('.spell-dc-val')?.textContent.trim() : '';
+      const perDayInput = row ? row.querySelector('.spell-per-day') : null;
+      const perDay = perDayInput ? perDayInput.value.trim() : '';
+      const bonus = row ? row.querySelector('.spell-bonus-val')?.textContent.trim() : '';
+      const known = row ? row.querySelector('.spell-known-val')?.textContent.trim() : '';
+      const spList = (spellCirclesData[lvl] || []).filter(s => s && s.trim());
+
+      sheetData.spells.levels[String(lvl)] = {
+        dc: (dcVal && dcVal !== '—') ? (parseInt(dcVal, 10) || dcVal) : '',
+        per_day: (perDay && perDay !== '—') ? (parseInt(perDay, 10) || perDay) : '',
+        bonus: (bonus && bonus !== '—') ? (parseInt(bonus, 10) || bonus) : '',
+        known: (known && known !== '—') ? (parseInt(known, 10) || spList.length) : (spList.length || ''),
+        spells: spList
+      };
+
+      const knownEl = row ? row.querySelector('.spell-known, .spell-known-val') : null;
+      const knownNum = parseInt(knownEl?.value || knownEl?.textContent, 10) || 0;
+      const perDayNum = parseInt(perDay, 10) || 0;
+      const used = row ? (parseInt(row.querySelector('.spell-used')?.value, 10) || 0) : 0;
+      sheetData.spells.slots.push({ lvl, known: knownNum, perDay: perDayNum, used });
+    }
 
     currentChar.name = document.getElementById('sheetCharName').value.trim() || '';
     currentChar.level = parseInt(document.getElementById('sheetLevelInput').value, 10) || 1;
@@ -4899,14 +5476,34 @@ document.addEventListener('DOMContentLoaded', function () {
       saveAllData();
       saveBtn.classList.add('btn-success');
       saveBtn.classList.remove('btn-primary');
-      const savedMsg = 'Cached in Web Cookies';
-      saveBtn.innerHTML = '<i class="icon-base ti tabler-cookie me-1"></i> ' + savedMsg;
-      showToast('Character cached in web cookies and local storage!', 'success');
-      setTimeout(() => {
-        saveBtn.classList.remove('btn-success');
-        saveBtn.classList.add('btn-primary');
-        saveBtn.innerHTML = '<i class="icon-base ti tabler-device-floppy me-1"></i> ' + (i18n.nav_save || 'Save');
-      }, 1500);
+      saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+
+      const payload = buildFastSheetPayload();
+      fetch('/api/save-character', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(res => {
+        saveBtn.innerHTML = '<i class="icon-base ti tabler-check me-1"></i> Saved to Server';
+        showToast(`Saved '${res.character_name || payload.basic['in-name']}' to server storage!`, 'success');
+        setTimeout(() => {
+          saveBtn.classList.remove('btn-success');
+          saveBtn.classList.add('btn-primary');
+          saveBtn.innerHTML = '<i class="icon-base ti tabler-device-floppy me-1"></i> ' + (i18n.nav_save || 'Save');
+        }, 1500);
+      })
+      .catch(err => {
+        console.warn('Server save error, falling back to local cookies:', err);
+        saveBtn.innerHTML = '<i class="icon-base ti tabler-cookie me-1"></i> Cached in Cookies';
+        showToast('Character cached in web cookies and local storage!', 'warning');
+        setTimeout(() => {
+          saveBtn.classList.remove('btn-success');
+          saveBtn.classList.add('btn-primary');
+          saveBtn.innerHTML = '<i class="icon-base ti tabler-device-floppy me-1"></i> ' + (i18n.nav_save || 'Save');
+        }, 1500);
+      });
     });
   }
 
@@ -4982,6 +5579,8 @@ document.addEventListener('DOMContentLoaded', function () {
   renderEquippedArmorChips();
   initMulticlassModal();
   setupTraitEvents();
+  initSpellCirclesUI();
+  initUserAuth();
   onClassOrLevelChange();
 
   if (shouldLoadExample) {

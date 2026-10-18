@@ -655,7 +655,7 @@ class PdfCharacterSheetView:
                     for s_idx, sp_name in enumerate(s_list[:8], 1):
                         fields[f'Spells {lvl} {s_idx}'] = str(sp_name).strip()
 
-            in_sp_cls = basic.get('in-spell-class', '').strip()
+            in_sp_cls = str(basic.get('in-spell-class', '') or '').strip()
             if not in_sp_cls and isinstance(spells_source, dict):
                 in_sp_cls = str(spells_source.get('castingClass', '')).strip()
 
@@ -666,7 +666,7 @@ class PdfCharacterSheetView:
             else:
                 spell_class = character.primary_class.title()
 
-            in_cl = basic.get('in-spell-cl', '').strip()
+            in_cl = str(basic.get('in-spell-cl', '') or '').strip()
             if not in_cl and isinstance(spells_source, dict):
                 in_cl = str(spells_source.get('cl', '')).strip()
 

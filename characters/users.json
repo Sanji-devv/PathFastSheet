@@ -1,0 +1,11 @@
+[
+  {
+    "id": "guest_jOXB_D2b",
+    "username": "Guest (jOXB)",
+    "is_guest": true,
+    "created_at": 1792306569.9637733,
+    "last_login": 1792306569.9644964,
+    "password_hash": "",
+    "salt": ""
+  }
+]
